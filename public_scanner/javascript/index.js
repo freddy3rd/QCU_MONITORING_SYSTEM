@@ -38,7 +38,18 @@ const APIController = (function () {
     });
     return available_camera;
   };
-
+  const _room_webcam = async (constraints, video) => {
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then((stream) => {
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(function (error) {
+        console.log(constraints);
+        console.log(error);
+      });
+  };
   const _fetch_pairedDevice = async () => {
     try {
       const result = await fetch("./paired_devices.json?" + Date.now(), {
@@ -186,7 +197,7 @@ const APIController = (function () {
       return _scanner(camera);
     },
     otherScanner(camera, index) {
-      return _scanner(camera, index);
+      return _otherScanner(camera, index);
     },
     room_webcam(constraints, video) {
       return _room_webcam(constraints, video);
