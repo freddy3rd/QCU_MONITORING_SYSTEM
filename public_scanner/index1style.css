@@ -1,0 +1,50 @@
+.login-box .login-logo{
+    text-align: right;
+    margin-right: -100%;
+    margin-top: -60px;
+}
+
+.login-box .login-logo #date{
+    font-size: 18px;
+    font-weight: bolder;
+    margin-right: 110px;
+}
+
+.login-box .login-logo #time{
+    font-size: 18px;
+    margin-top: -37px;
+}
+
+.login-box .login-logo-pic img{
+    height:80px;
+    width: 80px;
+    margin-left: -100%;
+    margin-top: -70px; 
+} 
+
+.login-box .login-logo-pic h2{
+    margin-top: -62px;
+    margin-left: -78%;
+}
+
+.login-box .login-title h3{
+    text-align: center;
+}
+
+.login-box .login-box-body{
+    margin-left: 100%;
+    width: 100%;
+    margin-top: -310px;
+}
+
+#preview{
+    margin-left: -100%;
+    margin-top: -50px;
+}
+
+.login-box .text p{
+    font-size: 16px;
+    font-weight: bolder;
+    margin-left: -55%;
+    margin-top: -95px;
+}

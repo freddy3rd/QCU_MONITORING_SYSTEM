@@ -1,0 +1,20 @@
+{
+    "name": "scanner",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "start": "parcel ./*.html ",
+        "build": "parcel build ./*.html  --dist-dir ./build"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "nodemon": "^2.0.22",
+        "parcel": "^2.7.0"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "init": "^0.1.2",
+        "mysql": "^2.18.1"
+    }
+}

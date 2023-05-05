@@ -1,0 +1,23 @@
+[
+    {
+        "Room_name": "a400",
+        "device": "Scanner",
+        "deviceId": "420ba43174014481080bc787d22716a81412642e97c2a820c15ba1075a68d834",
+        "label": "USB Camera (0c45:6340)",
+        "status": "1"
+    },
+    {
+        "Room_name": "a401",
+        "device": "Monitoring",
+        "deviceId": "1ca17ee6e93bb4beb735f5a5bc918b0b8dbb4f53a06416ba61c91b767db6251c",
+        "label": "VGA Webcam (0bda:57b3)",
+        "status": "1"
+    },
+    {
+        "Room_name": "ac407",
+        "device": "Monitoring",
+        "deviceId": "98c67d3339d91f791dbacdcb47e4082d92b9ac40544bda2837ba86742424c0ee",
+        "label": "Integrated Camera (13d3:784b)",
+        "status": "0"
+    }
+]

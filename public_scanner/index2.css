@@ -1,0 +1,281 @@
+
+/* GOOGLE FONTS ONLINE */
+  @import url('https://fonts.googleapis.com/css2?family=Itim&family=Poppins:wght@300&display=swap');
+
+:root{
+    --gap: .3rem;
+    --border-size: 2px;
+    --font-size-title: 1.88rem;
+    --poppins: 'Poppins', sans-serif;
+    --w-video: 400px;
+}
+*, *::before, *::after{
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+}
+html{
+    color-scheme: dark light;
+}
+body{
+    min-height: 100vh;
+    background-image: url("images/bgAMS.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+em{
+    font-family: 'Itim', cursive;
+}
+
+.main-container{
+    min-height: 100vh;
+    margin: auto;
+}
+header{
+    /* outline: 1px solid red; */
+    padding: var(--gap);
+}
+nav{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    /* outline: 1px solid red; */
+    align-items: center;
+}
+figure{
+    display: flex;
+    /* outline: 1px solid red;     */
+    /* column-gap: var(--gap); */
+    justify-content: start;
+    align-items: center;
+}
+figcaption span{ 
+    font-family: var(--poppins);
+    /* outline: 1px solid red;    */
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: .3rem;
+}
+figcaption span:nth-child(1){ 
+    color: blue;
+}
+figcaption span:nth-child(2){ 
+    color: yellow;
+}
+figcaption span:nth-child(3){ 
+    color: red;
+}
+img{
+    max-width: 50px;
+    aspect-ratio: 1;
+    scale: 2;
+    /* outline: 1px solid red; */
+}
+.nav-child:nth-child(2){
+    /* outline: 1px solid red; */
+    margin-left: auto;
+    padding-inline: var(--gap);
+}
+.nav-child:nth-child(2) > .nav-lists{
+    /* outline: 1px solid red; */
+    padding-inline: var(--gap);
+}
+.nav-child:nth-child(2) > .nav-lists > span{
+    font-family: var(--poppins);
+    padding: 0rem var(--gap);
+}
+.nav-child:nth-child(2) > .nav-lists > span:nth-child(1){
+    border-right: var(--border-size) solid #252525;
+}
+.nav-child:nth-child(2) > .nav-lists > span:nth-child(2){
+    border-left: var(--border-size) solid #252525;
+}
+
+
+/* SECTION PART */
+section{
+    --pad: 3.1rem;
+
+    padding-block: var(--pad);
+    /* outline: 1px solid red; */
+}
+section > div{
+    display: grid;
+    place-items: center;
+    /* outline: 1px solid red; */
+    padding-inline: .5rem;
+}
+section > div > :is(h1,h2,h3,h4,h5,h6,p,span,label,input){
+    font-family: var(--poppins);
+    font-size: var(--font-size-title);
+    text-align: center;
+    letter-spacing: .1rem;
+}
+
+/* BODY CONTAINER CENTER */
+main{
+    /* outline: 1px solid black; */
+    padding-inline: calc(var(--gap) * 5);
+    display: flex;
+    column-gap: calc(var(--gap) * 2.5);
+    justify-content: center;
+    /* max-width: 1250px; width: 100%; */
+    padding: 1rem;
+    width: 100%;
+    margin: auto;
+    height: 100%;
+}
+main > div{
+    /* outline: 1px solid black; */
+    border-radius: .3rem;
+    border: 0;
+    /* padding: calc(var(--gap) * 2.5); */
+}
+main > div > video{
+    /* outline: 1px solid #cacaca; */
+    box-shadow: inset 0px 0px 3px #353535;
+    border-radius: .3rem;
+    min-width: var(--w-video); 
+    aspect-ratio: 16/9;
+    width: 100%;
+    /* height: 100%; */
+    /* z-index: 1; */
+}
+main > div:first-child{
+    position: relative;
+    /* outline: 1px solid rgb(49, 29, 29); */
+    max-width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+main > div:nth-child(2), .space{
+   visibility: hidden;
+   width: 20rem;
+   /* padding-inline: 15rem; */
+   /* outline: 1px solid rgb(214, 30, 30); */
+}
+main > div:first-child > .video-caption{
+    position: absolute;
+    /* outline: 1px solid tomato; */
+    border: 0; border-radius: .3rem;
+    padding: .3rem .6rem;
+    z-index: -1;
+    pointer-events: none;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: #252525;
+    /* background-color: #cacaca; */
+    /* backdrop-filter: invert(50%); */
+}
+main > div:last-child{
+    background-color: #f5f5f5;
+    max-width: 250px; width: 100%;
+    /* outline: 1.5px solid #252525; */
+    box-shadow: 1px 1px 5px #252525;
+    border: 0;
+    outline-offset: 10px;
+    padding: 2.5rem 1rem;
+    align-self: center;
+    height: 100%;
+}
+main > div > form{ 
+    display: flex;
+    flex-direction: column;
+    row-gap: .8rem;
+}
+main > div > form > div{ 
+    display: grid;
+    place-items: center;
+}
+main > div > form > div > label{ 
+    font-size: .85rem;
+    text-align: center;
+    font-family: var(--poppins);
+    font-weight: bold;
+}
+main > div > form > div > :is(input, select){ 
+    width: 100%;
+    padding: .2rem;
+    border-radius: .3rem;
+}
+main > div > form > div > input{ 
+    
+    line-height: 1.2rem;
+    font-family: var(--poppins);
+    font-weight: 600;
+    border: 0;
+    padding: .3rem .6rem;
+    outline: 1px solid #cacaca;
+}
+main > div > form > div > input:focus{ 
+    
+    outline: 2px solid #353535;
+}
+
+main > div > form > div > button{ 
+    padding: .5rem 1.8rem;
+    cursor: pointer;
+    margin-block: .6rem;
+}
+
+@media only screen and (max-width: 600px){
+    
+    main{
+        /* outline: 1px solid rgb(23, 224, 191); */
+        /* padding-inline: calc(var(--gap) * 5); */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        row-gap: calc(var(--gap) * 2.5);
+        padding: 1rem;
+        width: 100%;
+    }
+    main > div > video{
+        /* outline: 1px solid rgb(214, 30, 30); */
+        border-radius: .3rem;
+        height: 300px;
+        width: 500px;
+        /* z-index: 1; */
+    }
+    main > div:last-child{
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 415px) {
+    
+    nav{
+        flex-direction: column;
+        /* outline: 1px solid red; */
+        width: 100%;
+    } 
+    nav > div{
+        width: 100%;
+        margin: auto;
+        text-align: center;
+    }
+    h3.scale-min{
+        font-size: 1rem;
+    }
+    section{
+        --pad: 0.6rem;
+    
+        padding-block: var(--pad);
+        /* outline: 1px solid red; */
+    }
+    
+}
+@media (max-width: 700px) {
+    
+    /* TABLET */
+    
+}
+@media (max-width: 400px) {
+    
+    video{
+        scale: .8;
+    }
+    
+}

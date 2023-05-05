@@ -1,0 +1,30 @@
+[
+    {
+        "ID": "1",
+        "Device": "Scanner",
+        "Room_name": "a400",
+        "Room_Floor": "1st Floor",
+        "status": "1"
+    },
+    {
+        "ID": "2",
+        "Device": "Monitoring",
+        "Room_name": "a401",
+        "Room_Floor": "1st Floor",
+        "status": "1"
+    },
+    {
+        "ID": "3",
+        "Device": "Monitoring",
+        "Room_name": "ac407",
+        "Room_Floor": "2nd Floor",
+        "status": "0"
+    },
+    {
+        "ID": "4",
+        "Device": "Monitoring",
+        "Room_name": "ac402",
+        "Room_Floor": "2nd Floor",
+        "status": "1"
+    }
+]

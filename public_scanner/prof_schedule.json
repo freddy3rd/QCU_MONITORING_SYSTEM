@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "facultyID": "FAC-000000002",
+    "type": "Online",
+    "lec_room": "3",
+    "lec_room_name": "a401",
+    "time_lec": "20:32:00 AM - 23:00:00 PM",
+    "lab_room": "1",
+    "time_lab": "22:59:00 AM - 23:51:00 PM",
+    "lab_room_name": "a402",
+    "campus": "San Bartolome"
+  },
+  {
+    "id": "2",
+    "facultyID": "FAC-000000003",
+    "type": "Onsite",
+    "lec_room": "4",
+    "lec_room_name": "ac407",
+    "time_lec": "20:32:00 AM - 23:00 :00 PM",
+    "lab_room": "2",
+    "time_lab": "22:50:00 AM - 23:51:00 PM",
+    "lab_room_name": "a401",
+    "campus": "San Bartolome"
+  },
+  {
+    "id": "3",
+    "facultyID": "FAC-000000023",
+    "type": "Online",
+    "lec_room": "3",
+    "lec_room_name": "ac402",
+    "time_lec": "19:28:50 PM - 23:59:00 PM",
+    "lab_room": "1",
+    "time_lab": "18:50:00 AM - 20:51:00 PM",
+    "lab_room_name": "a400",
+    "campus": "San Bartolome"
+  }
+]
