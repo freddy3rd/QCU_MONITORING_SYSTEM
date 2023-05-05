@@ -451,12 +451,15 @@ const APPController = (function (APICtrl, UICtrl) {
             $(".alert").hide();
             $(".alert-success").show();
             $(".message").html(response.message);
-            UICtrl.generate_image(
-              "#scanner_result_container",
-              img_id,
-              "#scanner_camera"
-            );
+
             // $("#faculty").val("");
+            setTimeout(() => {
+              UICtrl.generate_image(
+                "#scanner_result_container",
+                img_id,
+                "#scanner_camera"
+              );
+            }, 5000); //5s before capture
           }
           setTimeout(() => {
             $(".alert").hide();
@@ -483,6 +486,7 @@ const APPController = (function (APICtrl, UICtrl) {
           UICtrl.room_camera(index, device.deviceId);
         }
       });
+      room = "";
     }
     sched_arr.forEach(({ lecture, laboratory }) => {
       const lecture_obj = lecture;
