@@ -134,7 +134,7 @@ const APIController = (function () {
 
   const _otherScanner = async (camera, index) => {
     let video = document.querySelector(`#scanner_camera_${index}`);
-
+    console.log(video);
     const scanner = new Instascan.Scanner({
       video: video,
       scanPeriod: 5,
@@ -455,9 +455,9 @@ const APPController = (function (APICtrl, UICtrl) {
             // $("#faculty").val("");
             setTimeout(() => {
               UICtrl.generate_image(
-                "#scanner_result_container",
-                img_id,
-                "#scanner_camera"
+                `#result_container_${index}`,
+                "webcam",
+                `#scanner_camera_${index}`
               );
             }, 5000); //5s before capture
           }
@@ -483,10 +483,31 @@ const APPController = (function (APICtrl, UICtrl) {
           //generate webcam video container
           UICtrl.room_camera_container(index, facultyId, `room_num_${index}`);
           //set webcam visual
-          UICtrl.room_camera(index, device.deviceId);
+          // UICtrl.room_camera(index, device.deviceId);
+          const room_scan = await APICtrl.otherScanner(device.deviceId, index);
+          //capture when qr scanned : no validation yet
+          room_scan.addListener("scan", async (content) => {
+            // UICtrl.toTextBox(content.toString());
+            setTimeout(() => {
+              UICtrl.generate_image(
+                `#result_container_${index}`,
+                "webcam",
+                `#scanner_camera_${index}`
+              );
+            }, 5000); //5s before capture
+          });
         }
       });
-      room = "";
+    }
+    function remove_finished_camera(index) {
+      var parent = document.querySelector(".camera_list");
+      var child = document.querySelector(`#room_num_${index}`);
+
+      if (parent && child) {
+        parent.removeChild(child);
+      } else {
+        console.log("Parent or child element not found.");
+      }
     }
     sched_arr.forEach(({ lecture, laboratory }) => {
       const lecture_obj = lecture;
@@ -504,7 +525,7 @@ const APPController = (function (APICtrl, UICtrl) {
               0
             );
 
-            const room_selection = setInterval(() => {
+            setInterval(() => {
               // console.log(start_time);;
               const currentTime = new Date().toLocaleTimeString("en-US", {
                 hour12: false,
@@ -519,16 +540,86 @@ const APPController = (function (APICtrl, UICtrl) {
               // function open_cam(room) {}
               if (currentTime === start_time) {
                 // console.log(paired_Device);
-                open_cam(room, faculty_id);
+                // open_cam(room, faculty_id);
+                return new Promise((resolve) => {
+                  open_cam(room, faculty_id);
+                  resolve("active");
+                }).then((status) => {
+                  if (status === "active") {
+                    autoCapture_timer(index).then(() => {
+                      if (key === "end") {
+                        let hour = value.hour;
+                        let mins = value.mins;
+                        lecture_obj["time"].end.targetTime =
+                          targetTime.setHours(hour, mins, 0, 0);
+                        setInterval(() => {
+                          // console.log(start_time);;
+                          const currentTime = new Date().toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour12: false,
+                            }
+                          );
+
+                          let end_time = new Date(
+                            value.targetTime
+                          ).toLocaleTimeString("en-US", {
+                            hour12: false,
+                          });
+                          // function open_cam(room) {}
+                          if (currentTime === end_time) {
+                            // console.log(paired_Device);
+                            remove_finished_camera(index);
+                            console.log("end");
+                          } else {
+                            return;
+                            // console.log("removing...");
+                          }
+                        }, 1000);
+                      }
+                    });
+                  }
+                });
               } else {
                 console.log("searching...");
               }
             }, 1000);
-
-            // setTimeout(() => {
-            //   room_selection;
-            // }, 1000);
           }
+          //remove camera that meet the end time
+
+          // autoCapture_timer(index).then(() => {
+          //   if (key === "end") {
+          //     let hour = value.hour;
+          //     let mins = value.mins;
+          //     lecture_obj["time"].end.targetTime = targetTime.setHours(
+          //       hour,
+          //       mins,
+          //       0,
+          //       0
+          //     );
+          //     const camera_room_deletion = setInterval(() => {
+          //       // console.log(start_time);;
+          //       const currentTime = new Date().toLocaleTimeString("en-US", {
+          //         hour12: false,
+          //       });
+
+          //       let end_time = new Date(value.targetTime).toLocaleTimeString(
+          //         "en-US",
+          //         {
+          //           hour12: false,
+          //         }
+          //       );
+          //       // function open_cam(room) {}
+          //       if (currentTime === end_time) {
+          //         // console.log(paired_Device);
+          //         remove_finished_camera(index);
+          //         console.log(end);
+          //       } else {
+          //         console.log("searching...");
+          //       }
+          //     }, 1000);
+          //   }
+          // });
         });
       });
     });
@@ -616,14 +707,15 @@ const APPController = (function (APICtrl, UICtrl) {
   };
   const autoCapture_timer = (index) => {
     return new Promise(() => {
-      let time = "";
-      let gracePeriod = 15;
-      for (let i = 0; i < 10; i++) {
-        var randNum = Math.floor(Math.random() * 10) + 1;
-      }
+      // let time = "";
+      // let gracePeriod = 15;
+      // for (let i = 0; i < 10; i++) {
+      //   var randNum = Math.floor(Math.random() * 10) + 1;
+      // }
 
-      time = `${randNum + gracePeriod}000`;
-      var timeout = `${randNum + gracePeriod}400`;
+      // time = `${randNum + gracePeriod}000`;
+      // var timeout = `${randNum + gracePeriod}400`;
+      var timeout = "15000";
 
       const autoCapture = setInterval(() => {
         UICtrl.generate_image(
@@ -631,35 +723,35 @@ const APPController = (function (APICtrl, UICtrl) {
           "webcam",
           `#scanner_camera_${index}`
         );
-        send_facultyQr();
+        // send_facultyQr();
       }, time);
 
       setTimeout(() => {
-        remove_finished_container(index);
+        // remove_finished_container(index);
         clearInterval(autoCapture);
       }, timeout);
 
-      function remove_finished_container(index) {
-        var parent = document.querySelector(".camera_list");
-        var child = document.querySelector(`#room_num_${index}`);
+      // function remove_finished_container(index) {
+      //   var parent = document.querySelector(".camera_list");
+      //   var child = document.querySelector(`#room_num_${index}`);
 
-        if (parent && child) {
-          parent.removeChild(child);
-        } else {
-          console.log("Parent or child element not found.");
-        }
-      }
+      //   if (parent && child) {
+      //     parent.removeChild(child);
+      //   } else {
+      //     console.log("Parent or child element not found.");
+      //   }
+      // }
 
-      function send_facultyQr() {
-        const faculty_qr = document
-          .querySelector(`#scanner_camera_${index}`)
-          .getAttribute("data-faculty");
-        $.ajax({
-          url: "selfieCapture.php",
-          type: "POST",
-          data: { faculty: faculty_qr },
-        });
-      }
+      // function send_facultyQr() {
+      //   const faculty_qr = document
+      //     .querySelector(`#scanner_camera_${index}`)
+      //     .getAttribute("data-faculty");
+      //   $.ajax({
+      //     url: "selfieCapture.php",
+      //     type: "POST",
+      //     data: { faculty: faculty_qr },
+      //   });
+      // }
     });
   };
 
