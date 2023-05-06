@@ -111,7 +111,7 @@ const APIController = (function () {
   const _scanner = async (camera) => {
     let video = document.querySelector("#scanner_camera");
 
-    const scanner = new Instascan.Scanner({
+    const main_scanner = new Instascan.Scanner({
       video: video,
       scanPeriod: 5,
       mirror: false,
@@ -123,19 +123,19 @@ const APIController = (function () {
       // console.log(cam.id);
       if (cam.id === camera) {
         if (webcam.length > 0) {
-          await scanner.start(cam);
+          await main_scanner.start(cam);
         } else {
           alert("No Camera Found");
         }
       }
     });
-    return scanner;
+    return main_scanner;
   };
 
-  const _otherScanner = async (camera, index) => {
+  const _openOtherScanner = async (camera, index) => {
     let video = document.querySelector(`#scanner_camera_${index}`);
-    console.log(video);
-    const scanner = new Instascan.Scanner({
+
+    const open_scanner = new Instascan.Scanner({
       video: video,
       scanPeriod: 5,
       mirror: false,
@@ -147,13 +147,45 @@ const APIController = (function () {
       // console.log(cam.id);
       if (cam.id === camera) {
         if (webcam.length > 0) {
-          await scanner.start(cam);
+          await open_scanner.start(cam);
         } else {
           alert("No Camera Found");
         }
       }
     });
-    return scanner;
+    return open_scanner;
+  };
+  const _closeOtherScanner = async (camera, faculty_id) => {
+    const close_scanner = new Instascan.Scanner({
+      video: document.querySelector(`[data-faculty="${faculty_id}"]`),
+    });
+    console.log(document.querySelector(`[data-faculty="${faculty_id}"]`));
+    // const webcam = await Instascan.Camera.getCameras();
+
+    const webcam = await Instascan.Camera.getCameras();
+    webcam.forEach(async (cam) => {
+      // console.log(cam.id);
+      if (cam.id === camera) {
+        if (webcam.length > 0) {
+          close_scanner.addListener("inactive", async function () {
+            await close_scanner.stop(cam);
+          });
+          // navigator.mediaDevices
+          //   .getUserMedia({ video: { deviceId: { exact: camera } } })
+          //   .then((stream) => {
+          //     const videoStream = stream.getTracks().filter(function () {
+          //       return Track.kind ===
+          //     })
+          //   })
+          //   .catch(function (error) {
+          //     console.log(error);
+          //   });
+        } else {
+          alert("No Camera Found");
+        }
+      }
+    });
+    return close_scanner;
   };
 
   const _config_setting = async (device, label, deviceId) => {
@@ -196,8 +228,11 @@ const APIController = (function () {
     scanner(camera) {
       return _scanner(camera);
     },
-    otherScanner(camera, index) {
-      return _otherScanner(camera, index);
+    openOtherScanner(camera, index) {
+      return _openOtherScanner(camera, index);
+    },
+    closeOtherScanner(camera, faculty_id) {
+      return _closeOtherScanner(camera, faculty_id);
     },
     room_webcam(constraints, video) {
       return _room_webcam(constraints, video);
@@ -374,11 +409,12 @@ const APPController = (function (APICtrl, UICtrl) {
 
   const UInterface = async () => {
     const paired_Device = await APICtrl.fetch_pairedDevice();
-    console.log(paired_Device);
+
+    //main scanner
     paired_Device.forEach(async (device) => {
       if (device.device === "Scanner") {
         const scan = await APICtrl.scanner(device.deviceId);
-        scan.addListener("scan", async (content) => {
+        scan.addListener("scan", (content) => {
           UICtrl.toTextBox(content.toString());
         });
       }
@@ -481,12 +517,14 @@ const APPController = (function (APICtrl, UICtrl) {
           console.log(device.deviceId);
           index++;
           //generate webcam video container
-          UICtrl.room_camera_container(index, facultyId, `room_num_${index}`);
+          UICtrl.room_camera_container(index, facultyId, facultyId);
           //set webcam visual
-          // UICtrl.room_camera(index, device.deviceId);
-          const room_scan = await APICtrl.otherScanner(device.deviceId, index);
+          const room_scan = await APICtrl.openOtherScanner(
+            device.deviceId,
+            index
+          );
           //capture when qr scanned : no validation yet
-          room_scan.addListener("scan", async (content) => {
+          room_scan.addListener("scan", () => {
             // UICtrl.toTextBox(content.toString());
             setTimeout(() => {
               UICtrl.generate_image(
@@ -499,16 +537,24 @@ const APPController = (function (APICtrl, UICtrl) {
         }
       });
     }
-    function remove_finished_camera(index) {
-      var parent = document.querySelector(".camera_list");
-      var child = document.querySelector(`#room_num_${index}`);
 
+    async function close_cam(room, facultyId) {
+      var parent = document.querySelector(".camera_list");
+      var child = document.querySelector(`#${facultyId}`);
+      console.log("executed_successfully");
       if (parent && child) {
-        parent.removeChild(child);
+        paired_Device.forEach(async (device) => {
+          if (device.Room_name === room) {
+            await APICtrl.closeOtherScanner(device.deviceId, facultyId);
+            parent.removeChild(child);
+            console.log("executed");
+          }
+        });
       } else {
         console.log("Parent or child element not found.");
       }
     }
+
     sched_arr.forEach(({ lecture, laboratory }) => {
       const lecture_obj = lecture;
       Object.entries(lecture).forEach(([key, value]) => {
@@ -518,6 +564,7 @@ const APPController = (function (APICtrl, UICtrl) {
             let faculty_id = lecture_obj["info"].faculty;
             let hour = value.hour;
             let mins = value.mins;
+            // console.log(value);
             lecture_obj["time"].start.targetTime = targetTime.setHours(
               hour,
               mins,
@@ -537,51 +584,45 @@ const APPController = (function (APICtrl, UICtrl) {
                   hour12: false,
                 }
               );
-              // function open_cam(room) {}
-              if (currentTime === start_time) {
-                // console.log(paired_Device);
-                // open_cam(room, faculty_id);
-                return new Promise((resolve) => {
-                  open_cam(room, faculty_id);
-                  resolve("active");
-                }).then((status) => {
-                  if (status === "active") {
-                    autoCapture_timer(index).then(() => {
-                      if (key === "end") {
-                        let hour = value.hour;
-                        let mins = value.mins;
-                        lecture_obj["time"].end.targetTime =
-                          targetTime.setHours(hour, mins, 0, 0);
-                        setInterval(() => {
-                          // console.log(start_time);;
-                          const currentTime = new Date().toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour12: false,
-                            }
-                          );
 
-                          let end_time = new Date(
-                            value.targetTime
-                          ).toLocaleTimeString("en-US", {
-                            hour12: false,
-                          });
-                          // function open_cam(room) {}
-                          if (currentTime === end_time) {
-                            // console.log(paired_Device);
-                            remove_finished_camera(index);
-                            console.log("end");
-                          } else {
-                            return;
-                            // console.log("removing...");
-                          }
-                        }, 1000);
-                      }
-                    });
-                  }
-                });
-              } else {
-                console.log("searching...");
+              if (currentTime === start_time) {
+                try {
+                  open_cam(room, faculty_id);
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+            }, 1000);
+          }
+          if (key === "end") {
+            let room = lecture_obj["info"].room;
+            let faculty_id = lecture_obj["info"].faculty;
+            let hour = value.hour;
+            let mins = value.mins;
+            // console.log(value);
+            lecture_obj["time"].end.targetTime = targetTime.setHours(
+              hour,
+              mins,
+              0,
+              0
+            );
+
+            setInterval(() => {
+              // console.log(start_time);;
+              const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              });
+
+              let end_time = new Date(value.targetTime).toLocaleTimeString(
+                "en-US",
+                {
+                  hour12: false,
+                }
+              );
+              // function open_cam(room) {}
+              if (currentTime === end_time) {
+                close_cam(room, faculty_id);
+                console.log("close");
               }
             }, 1000);
           }
@@ -833,3 +874,42 @@ const APPController = (function (APICtrl, UICtrl) {
 })(APIController, UIController);
 
 APPController.init();
+//  return new Promise((resolve) => {
+
+//                   resolve("active");
+//                 }).then((status) => {
+//                   if (status === "active") {
+//                     autoCapture_timer(index).then(() => {
+//                       if (key === "end") {
+//                         let hour = value.hour;
+//                         let mins = value.mins;
+//                         lecture_obj["time"].end.targetTime =
+//                           targetTime.setHours(hour, mins, 0, 0);
+//                         setInterval(() => {
+//                           // console.log(start_time);;
+//                           const currentTime = new Date().toLocaleTimeString(
+//                             "en-US",
+//                             {
+//                               hour12: false,
+//                             }
+//                           );
+
+//                           let end_time = new Date(
+//                             value.targetTime
+//                           ).toLocaleTimeString("en-US", {
+//                             hour12: false,
+//                           });
+//                           // function open_cam(room) {}
+//                           if (currentTime === end_time) {
+//                             // console.log(paired_Device);
+//                             remove_finished_camera(index);
+//                             console.log("end");
+//                           } else {
+//                             return;
+//                             // console.log("removing...");
+//                           }
+//                         }, 1000);
+//                       }
+//                     });
+//                   }
+//                 });

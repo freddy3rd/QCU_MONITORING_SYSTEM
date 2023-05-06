@@ -1,23 +1,23 @@
 [
-  {
-    "Room_name": "a400",
-    "device": "Monitoring",
-    "deviceId": "7e7f913f4aef01f3905d33c353e4a584c80bb048cb7bb646916af14565651927",
-    "label": "Integrated Camera (13d3:784b)",
-    "status": "1"
-  },
-  {
-    "Room_name": "ac402",
-    "device": "Monitoring",
-    "deviceId": "1ca17ee6e93bb4beb735f5a5bc918b0b8dbb4f53a06416ba61c91b767db6251c",
-    "label": "VGA Webcam (0bda:57b3)",
-    "status": "1"
-  },
-  {
-    "Room_name": "ac407",
-    "device": "Scanner",
-    "deviceId": "998634baa55896332f426a87b51cd4ab178b6cfb2634ce5a11b902a0e7131bfa",
-    "label": "USB Camera (0c45:6340)",
-    "status": "0"
-  }
+    {
+        "Room_name": "a400",
+        "device": "Scanner",
+        "deviceId": "7e7f913f4aef01f3905d33c353e4a584c80bb048cb7bb646916af14565651927",
+        "label": "Integrated Camera (13d3:784b)",
+        "status": "1"
+    },
+    {
+        "Room_name": "a401",
+        "device": "Monitoring",
+        "deviceId": "1ca17ee6e93bb4beb735f5a5bc918b0b8dbb4f53a06416ba61c91b767db6251c",
+        "label": "VGA Webcam (0bda:57b3)",
+        "status": "1"
+    },
+    {
+        "Room_name": "ac407",
+        "device": "Monitoring",
+        "deviceId": "998634baa55896332f426a87b51cd4ab178b6cfb2634ce5a11b902a0e7131bfa",
+        "label": "USB Camera (0c45:6340)",
+        "status": "0"
+    }
 ]
