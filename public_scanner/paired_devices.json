@@ -1,30 +1,7 @@
 [
     {
-        "Room_name": "a400",
-        "device": "Scanner",
-        "deviceId": "2a86c07179d42520da98cf729def57e9f666e7c46935196c01cf73c0a7f2c416",
-        "label": "DroidCam Source 3",
-        "status": "1"
-    },
-    {
-        "Room_name": "a401",
         "device": "Monitoring",
         "deviceId": "91737ed662dce42fbb825503e8aaa9066e8093fd23b4d004aad09483ae75c24a",
-        "label": "HD User Facing (04f2:b64f)",
-        "status": "1"
-    },
-    {
-        "Room_name": "ac407",
-        "device": "Monitoring",
-        "deviceId": "9fff5b6388c63e78d5a603238e00eae6ab1f24ad66f4943c0eaa45b0e493fc05",
-        "label": "DroidCam Source 2",
-        "status": "0"
-    },
-    {
-        "Room_name": "ac402",
-        "device": "Monitoring",
-        "deviceId": "ed5c38f06f77055e67f5580618e7c48335b67a9aa6300e011e48f6dcb6341cbb",
-        "label": "OBS Virtual Camera",
-        "status": "1"
+        "label": "HD User Facing (04f2:b64f)"
     }
 ]

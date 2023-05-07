@@ -5,6 +5,33 @@
 //   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
 // );
 
+const emailreport = (from, email, subject) => {
+  var content = "Good Day QCUians! We're really sorry for the inconvenience that the system caused. This message is to notify that the room (room number designated ex. 303) is having trouble with the camera. We assure you to take our full responsibility for this concern, the hardworking teams will provide immediate solution to this problem. We Thank you for your dedication and consideration, We appreciate you and all a lot. **THIS IS SYSTEM GENERATED PLEASE DO NOT REPLY**";
+
+  fetch('https://automatedemailservice.onrender.com/sendEmail',{
+    method: "POST",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: from,
+      email: email,
+      subject: subject,
+      content: content
+    })
+  }).then((res) => {
+    res.json()
+    console.log(res)
+  }).then((data) => {
+    // console.log(data)
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+
+// emailreport("QCUMS", "beni.creatives@gmail.com", "Error Report!")
+
 const APIController = (function () {
   const _storeCamera_info = (async () => {
     const results = await navigator.mediaDevices.enumerateDevices();
@@ -48,6 +75,7 @@ const APIController = (function () {
       .catch(function (error) {
         console.log(constraints);
         console.log(error);
+        // emailreport("QCUMS", "beni.creatives@gmail.com", "Error Report!")
       });
   };
   const _fetch_pairedDevice = async () => {
