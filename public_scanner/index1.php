@@ -6,11 +6,6 @@
 
 
 <style>
-  @media screen and (max-width:600px) {
-    .row{
-      display:none;
-    }
-  }
    video{
     position:relative;
     width:480px;
@@ -36,7 +31,7 @@
     z-index:999;
     background: rgba(0,0,0,0.5)
   }
-  #webcam,.img_result,#scanner_webcam{
+  #webcam,.img_result > img,#scanner_webcam{
     visibility: hidden; 
     position: absolute;
     pointer-events:none;
@@ -106,7 +101,7 @@
       <div class="camera-container d-grid justify-content-center position-relative">
         <video id="scanner_camera" class="mx-2" autoplay></video>
         
-          <div id="scanner_result_container" class="img_result position-absolute" ></div>
+          <div id="scanner_result_container" class="main_img_result position-absolute" ></div>
           <div class="p-3 bg-light">
             <div class="form-group">
               <form id="attendance">
