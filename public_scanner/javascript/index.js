@@ -184,27 +184,6 @@ const APIController = (function () {
     return open_scanner;
   };
   const _closeOtherScanner = async (deviceId) => {
-    // const close_scanner = new Instascan.Scanner({
-    //   video: document.querySelector(`[data-faculty="${faculty_id}"]`),
-    // });
-    // console.log(document.querySelector(`[data-faculty="${faculty_id}"]`));
-    // // const webcam = await Instascan.Camera.getCameras();
-
-    // const webcam = await Instascan.Camera.getCameras();
-    // webcam.forEach(async (cam) => {
-    //   // console.log(cam.id);
-    //   if (cam.id === camera) {
-    //     if (webcam.length > 0) {
-    //       close_scanner.addListener("inactive", async function () {
-    //         await close_scanner.stop(cam);
-    //       });
-         
-    //     } else {
-    //       alert("No Camera Found");
-    //     }
-    //   }
-    // });
-    // return close_scanner;
     var constraints = {
       video: {
         deviceId: {
@@ -346,7 +325,7 @@ const UIController = (function (APICtrl) {
     },
     room_camera_container(index, faculty_id, room_num) {
       const html = `<div id="${room_num}">
-                  <video id="scanner_camera_${index}" data-faculty="${faculty_id}"  data-attach="camera ${index}" class="mx-2" autoplay></video>
+                  <video id="scanner_camera_${index}" data-faculty="${faculty_id}"  data-attach="camera ${index}" class="mx-2 video" autoplay></video>
                   <div id="result_container_${index}" class="img_result" ></div>
                   </div>`;
       document
@@ -389,31 +368,44 @@ const UIController = (function (APICtrl) {
         .insertAdjacentHTML("afterbegin", html);
     },
 
-    generate_image(img_parent, img_id, video_selector) {
+    generate_image(video_id) {
+    // generate_image(video_id) {
       let time_created = timeFormat.currentTime.format(timeFormat.date());
       let date_created = timeFormat.currentDay.format(timeFormat.date());
 
       var canvas = document.createElement("canvas");
       let data_time = `${date_created}  :  ${time_created}`;
+      // const video = document.querySelector(video_id);
+      const videos = document.querySelectorAll(`${video_id}`);
+      let playingVideos = [];
+      const images = [];
+     
+      
 
-      const video = document.querySelector(video_selector);
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "white";
-      ctx.font = "20px Arial";
-      ctx.fillText(data_time, 20, 40);
-      var dataUrl_1 = canvas.toDataURL();
-
-      document.querySelector(img_parent).innerHTML =
-        '<img id= "' + img_id + '" src = "' + dataUrl_1 + '">';
-
-      var image_1 = document.querySelector(`#${img_id}`).src;
-
-      Webcam.upload(image_1, "./selfieCapture.php", function (code, text) {});
+      videos.forEach(video => {
+        // Check if the video is currently playing
+        if (!video.paused) {
+          playingVideos.push(video);
+        }
+      });
+      if (playingVideos.length > 0) {
+    
+        playingVideos.forEach(video => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = "white";
+          ctx.font = "20px Arial";
+          ctx.fillText(data_time, 20, 40);
+          var dataUrl_1 = canvas.toDataURL();
+          images.push(dataUrl_1);
+        });
+    
+      }
+      return images;
     },
+    
     storeDevideId(value) {
       document.querySelector(DomElement.deviceId).value = value;
     },
@@ -438,6 +430,16 @@ const APPController = (function (APICtrl, UICtrl) {
   const fetch_rooms = () => {
     APICtrl.fetch_rooms();
   };
+
+  
+  // const autoCapture =  function(){
+  //  return {
+  //   capture(index){
+       
+  //     },
+  //  }
+  // }
+
 
   const UInterface = async () => {
     const paired_Device = await APICtrl.fetch_pairedDevice();
@@ -542,47 +544,57 @@ const APPController = (function (APICtrl, UICtrl) {
     const sched_arr = await time_conversion();
     const targetTime = new Date();
     let index = 0;
-    var interval = "10000";
+    var interval = "15000";
     var timeout = "10100";
-
-    const autoCapture = setInterval(() => {
-      UICtrl.generate_image(
-        `#result_container_${index}`,
-        "webcam",
-        `#scanner_camera_${index}`
-      );
+  
+    function uploadVideoImages(video_id,faculty_id) {
+      const images = UICtrl.generate_image(video_id);
+    
+      if (images) {
+        images.forEach(image => {
+          Webcam.upload(image, "./selfieCapture.php", function(code, text) {
+            console.log('Image uploaded with status ' + code + ': ' + text);
+          });
+        });
+        // $.ajax({
+        //   url: "selfieCapture.php",
+        //   type: "POST",
+        //   data: { faculty: faculty_id },
+        // });
+      }
+    }
+    
+    setInterval(() => {
+      uploadVideoImages('.video',facultyId)
     }, interval);
     function open_cam(room, facultyId) {
 
-      paired_Device.forEach(async (device) => {
+   
+
+      paired_Device.forEach((device) => {
+     
         if (device.Room_name === room) {
           console.log(device.deviceId);
           const open = new Promise((resolve,reject)=>{
             const deviceId = device.deviceId
             resolve(deviceId)
           })
-
           open.then((deviceId)=>{
             index++;
             //generate webcam video container
             UICtrl.room_camera_container(index, facultyId, facultyId);
             //set webcam visual
-            UICtrl.room_camera(index, deviceId);
-            try {
-              autoCapture
-            } catch (error) {
-              console.log("no video yet");
-            }
-          })
-         
+            UICtrl.room_camera(index, deviceId); 
+         })  
         }
-      })      
+      })
     }
 
     function close_cam(room, facultyId) {
         var parent = document.querySelector(".camera_list");
         var child = document.querySelector(`#${facultyId}`);
         var video = document.querySelector(`[data-faculty ="${facultyId}"]`)
+        
         console.log("executed_successfully");
         if (parent && child) {
           paired_Device.forEach(async (device) => {
@@ -608,16 +620,14 @@ const APPController = (function (APICtrl, UICtrl) {
               }
             }
             video.srcObject = null;
-            video.stop();
+            video.stop;
           })
         })
         .catch(function (error) {
           console.log(constraints);
           console.log(error);
         });
-          setTimeout(() => {
-            clearInterval(autoCapture)
-          }, timeout);
+
           parent.removeChild(child);
         }
           });
@@ -628,6 +638,7 @@ const APPController = (function (APICtrl, UICtrl) {
 
     sched_arr.forEach(({ lecture, laboratory }) => {
       const lecture_obj = lecture;
+      const laboratory_obj = laboratory;
       Object.entries(lecture).forEach(([key, value]) => {
         Object.entries(value).forEach(([key, value]) => {
           if (key === "start") {
@@ -658,7 +669,10 @@ const APPController = (function (APICtrl, UICtrl) {
 
               if (currentTime === start_time) {
                 try {
+                  
                   open_cam(room, faculty_id);
+                
+
                 } catch (error) {
                   console.log(error);
                 }
@@ -672,6 +686,80 @@ const APPController = (function (APICtrl, UICtrl) {
             let mins = value.mins;
             // console.log(value);
             lecture_obj["time"].end.targetTime = targetTime.setHours(
+              hour,
+              mins,
+              0,
+              0
+            );
+
+            setInterval(() => {
+              // console.log(start_time);;
+              const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              });
+
+              let end_time = new Date(value.targetTime).toLocaleTimeString(
+                "en-US",
+                {
+                  hour12: false,
+                }
+              );
+              // function open_cam(room) {}
+              if (currentTime === end_time) {
+                close_cam(room, faculty_id);
+                console.log("close");
+              }
+            }, 1000);
+          }
+        });
+      });
+      Object.entries(laboratory).forEach(([key, value]) => {
+        Object.entries(value).forEach(([key, value]) => {
+          if (key === "start") {
+            let room = laboratory_obj["info"].room;
+            let faculty_id = laboratory_obj["info"].faculty;
+            let hour = value.hour;
+            let mins = value.mins;
+            // console.log(value);
+            laboratory_obj["time"].start.targetTime = targetTime.setHours(
+              hour,
+              mins,
+              0,
+              0
+            );
+
+            setInterval(() => {
+              // console.log(start_time);;
+              const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              });
+
+              let start_time = new Date(value.targetTime).toLocaleTimeString(
+                "en-US",
+                {
+                  hour12: false,
+                }
+              );
+
+              if (currentTime === start_time) {
+                try {
+                  
+                  open_cam(room, faculty_id);
+                
+
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+            }, 1000);
+          }
+          if (key === "end") {
+            let room = laboratory_obj["info"].room;
+            let faculty_id = laboratory_obj["info"].faculty;
+            let hour = value.hour;
+            let mins = value.mins;
+            // console.log(value);
+            laboratory_obj["time"].end.targetTime = targetTime.setHours(
               hour,
               mins,
               0,
@@ -717,7 +805,7 @@ const APPController = (function (APICtrl, UICtrl) {
       let lab_end_time = time_lab.slice(14, 22).toString();
 
 
-      const lecture_time = {
+      const schedulels = {
         lecture: {
           time: {
             start: {
@@ -752,83 +840,12 @@ const APPController = (function (APICtrl, UICtrl) {
           },
         },
       };
-      sched_arr.push(lecture_time);
+      sched_arr.push(schedulels);
     });
     return sched_arr;
   };
 
   
-  const autoCapture_timer = (index) => {
-    return new Promise(() => {
-      const autoCapture = setInterval(() => {
-        UICtrl.generate_image(
-          `#result_container_${index}`,
-          "webcam",
-          `#scanner_camera_${index}`
-        );
-        send_facultyQr();
-      }, time);
-
-      setTimeout(() => {
-        // remove_finished_container(index);
-        clearInterval(autoCapture);
-      }, timeout);
-
-      // function remove_finished_container(index) {
-      //   var parent = document.querySelector(".camera_list");
-      //   var child = document.querySelector(`#room_num_${index}`);
-      //   if (parent && child) {
-      //     parent.removeChild(child);
-      //   } else {
-      //     console.log("Parent or child element not found.");
-      //   }
-      // }
-
-      // function send_facultyQr() {
-      //   const faculty_qr = document
-      //     .querySelector(`#scanner_camera_${index}`)
-      //     .getAttribute("data-faculty");
-      //   $.ajax({
-      //     url: "selfieCapture.php",
-      //     type: "POST",
-      //     data: { faculty: faculty_qr },
-      //   });
-      // }
-    });
-  };
-
-
-  // DomCtrl.selfie_button.addEventListener("click", async (e) => {
-  //   e.preventDefault();
-  //   const facultyId = $("#facultyId").val();
-  //   const faculty_qr = $("#faculty").val();
-  //   const attendace_status = $("#status").val();
-  //   const img_id = "scanner_image";
-  //   const schedule = await APICtrl.fetch_schedule();
-  //   const paired_Device = await APICtrl.fetch_pairedDevice();
-
-  //   let dateTime_now = new Date();
-  //   const timeOptions = { hour: "numeric", minute: "numeric", hour12: true };
-  //   const twelveHourTime = dateTime_now.toLocaleTimeString(
-  //     "en-US",
-  //     timeOptions
-  //   ); //
-
-  //   // if (attendace_status === "out") {
-  //   //   UICtrl.generate_image(
-  //   //     "#scanner_result_container",
-  //   //     img_id,
-  //   //     "#scanner_camera"
-  //   //   );
-  //   // } else {
-  //   //   UICtrl.generate_image(
-  //   //     "#scanner_result_container",
-  //   //     img_id,
-  //   //     "#scanner_camera"
-  //   //   );
-  //   //   console.log(facultyId);
-  //   // }
-  // });
 
   DomCtrl.sync_camera.addEventListener("click", async () => {
     //get Webcams Details
