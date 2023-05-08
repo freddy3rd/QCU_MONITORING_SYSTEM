@@ -1,38 +1,41 @@
 [
-  {
-    "id": "1",
-    "facultyID": "FAC-000000002",
-    "type": "Online",
-    "lec_room": "3",
-    "lec_room_name": "a400",
-    "time_lec": "00:27:00 AM - 00:30:00 PM",
-    "lab_room": "1",
-    "time_lab": "22:59:00 AM - 23:51:00 PM",
-    "lab_room_name": "a402",
-    "campus": "San Bartolome"
-  },
-  {
-    "id": "2",
-    "facultyID": "FAC-000000003",
-    "type": "Onsite",
-    "lec_room": "4",
-    "lec_room_name": "ac407",
-    "time_lec": "23:36:43 PM - 23:37:43 PM",
-    "lab_room": "2",
-    "time_lab": "23:55:43 PM - 23:56:43 PM",
-    "lab_room_name": "a401",
-    "campus": "San Bartolome"
-  },
-  {
-    "id": "3",
-    "facultyID": "FAC-000000023",
-    "type": "Online",
-    "lec_room": "3",
-    "lec_room_name": "a401",
-    "time_lec": "23:47:43 PM - 23:48:43 PM",
-    "lab_room": "1",
-    "time_lab": "18:50:00 AM - 20:51:00 PM",
-    "lab_room_name": "a400",
-    "campus": "San Bartolome"
-  }
+    {
+        "id": "1",
+        "facultyID": "FAC-000000024",
+        "subjectID": "21",
+        "type": "Online",
+        "lec_room": "3",
+        "lec_room_name": "ac407",
+        "time_lec": "09:59:00 AM - 10:59:00 AM",
+        "lab_room": "1",
+        "time_lab": "11:50:00 AM - 11:51:00 AM",
+        "lab_room_name": "a400",
+        "campus": "San Bartolome"
+    },
+    {
+        "id": "2",
+        "facultyID": "FAC-000000025",
+        "subjectID": "24",
+        "type": "Onsite",
+        "lec_room": "2",
+        "lec_room_name": "a401",
+        "time_lec": "04:18:00 AM - 01:56:00 AM",
+        "lab_room": "2",
+        "time_lab": "02:06:00 AM - 02:09:00 AM",
+        "lab_room_name": "a401",
+        "campus": "San Bartolome"
+    },
+    {
+        "id": "3",
+        "facultyID": "FAC-000000023",
+        "subjectID": "25",
+        "type": "Online",
+        "lec_room": "3",
+        "lec_room_name": "ac407",
+        "time_lec": "04:18:00 AM - 01:56:00 AM",
+        "lab_room": "1",
+        "time_lab": "24:46:00 PM - 24:39:00 PM",
+        "lab_room_name": "a400",
+        "campus": "San Bartolome"
+    }
 ]

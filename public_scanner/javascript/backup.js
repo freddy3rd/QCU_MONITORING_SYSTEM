@@ -108,60 +108,6 @@ const APIController = (function () {
       data: { prof_schedule: 1 },
     });
   };
-  const _setSchedule = async (schedule) =>{
-    const sched_arr = [];
-    // const paired_Device = await APICtrl.fetch_pairedDevice();
-    schedule.forEach((sched) => {
-      const { facultyID, subjectID,time_lab, time_lec, lab_room_name, lec_room_name } =
-        sched;
-
-      let lec_start_time = time_lec.slice(0, 9).toString();
-      let lec_end_time = time_lec.slice(14, 22).toString();
-      let lab_start_time = time_lab.slice(0, 9).toString();
-      let lab_end_time = time_lab.slice(14, 22).toString();
-
-
-      const schedulels = {
-        lecture: {
-          time: {
-            start: {
-              hour: lec_start_time.slice(0, 2),
-              mins: lec_start_time.slice(3, 5),
-            },
-            end: {
-              hour: lec_end_time.slice(0, 2),
-              mins: lec_end_time.slice(3, 5),
-            },
-          },
-          info: {
-            faculty: facultyID,
-            subject: subjectID,
-            room: lec_room_name,
-          },
-        },
-        laboratory: {
-          time: {
-            start: {
-              hour: lab_start_time.slice(0, 2),
-              mins: lab_start_time.slice(3, 5),
-            },
-            end: {
-              id: 3,
-              hour: lab_end_time.slice(0, 2),
-              mins: lab_end_time.slice(3, 5),
-            },
-          },
-          info: {
-            faculty: facultyID,
-            subject: subjectID,
-            room: lab_room_name,
-          },
-        },
-      };
-      sched_arr.push(schedulels);
-    });
-    return sched_arr;
-  }
   const _scanner = async (camera) => {
     let video = document.querySelector("#scanner_camera");
 
@@ -186,6 +132,7 @@ const APIController = (function () {
     return main_scanner;
   };
 
+ 
   const _config_setting = async (device, label, deviceId) => {
     // const details = [];
     const info = {
@@ -217,18 +164,21 @@ const APIController = (function () {
     getSchedule() {
       return _getSchedule();
     },
-    setSchedule(schedule) {
-      return _setSchedule(schedule);
-    },
     storeCamera_info() {
       return _storeCamera_info;
     },
+    // scanner_webcam(deviceId) {
+    //   return _scanner_webcam(deviceId);
+    // },
     scanner(camera) {
       return _scanner(camera);
     },
     room_webcam(constraints, video) {
       return _room_webcam(constraints, video);
     },
+    // sendAttendance() {
+    //   return _sendAttendance();
+    // },
     config_setting(device, label, deviceId) {
       return _config_setting(device, label, deviceId);
     },
@@ -344,32 +294,8 @@ const UIController = (function (APICtrl) {
         .querySelector(DomElement.setting)
         .insertAdjacentHTML("afterbegin", html);
     },
-    scanner_generate_image(img_parent, img_id, video_selector) {
-      let time_created = timeFormat.currentTime.format(timeFormat.date());
-      let date_created = timeFormat.currentDay.format(timeFormat.date());
 
-      var canvas = document.createElement("canvas");
-      let data_time = `${date_created}  :  ${time_created}`;
-
-      const video = document.querySelector(video_selector);
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "white";
-      ctx.font = "20px Arial";
-      ctx.fillText(data_time, 20, 40);
-      var dataUrl_1 = canvas.toDataURL();
-
-      document.querySelector(img_parent).innerHTML =
-        '<img id= "' + img_id + '" src = "' + dataUrl_1 + '">';
-
-      var image_1 = document.querySelector(`#${img_id}`).src;
-
-      Webcam.upload(image_1, "./selfieCapture.php", function (code, text) {});
-    },
-    room_generate_image(video_id) {
+    generate_image(video_id) {
     // generate_image(video_id) {
       let time_created = timeFormat.currentTime.format(timeFormat.date());
       let date_created = timeFormat.currentDay.format(timeFormat.date());
@@ -391,7 +317,7 @@ const UIController = (function (APICtrl) {
       });
       if (playingVideos.length > 0) {
     
-          playingVideos.forEach(video => {
+        playingVideos.forEach(video => {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           const ctx = canvas.getContext("2d");
@@ -400,12 +326,9 @@ const UIController = (function (APICtrl) {
           ctx.font = "20px Arial";
           ctx.fillText(data_time, 20, 40);
           var dataUrl_1 = canvas.toDataURL();
-          const datas = {
-            src:dataUrl_1
-          }
           images.push(dataUrl_1);
         });
-        
+    
       }
       return images;
     },
@@ -428,204 +351,25 @@ const UIController = (function (APICtrl) {
 const APPController = (function (APICtrl, UICtrl) {
   const DomCtrl = UICtrl.button();
   const DomInputs = UICtrl.inputField();
-
   let index = 0;
-  let targetTime = new Date();
+
   //fetch room from database and store it to a json file
   const fetch_rooms = () => {
     APICtrl.fetch_rooms();
   };
+
   
-  const sched_arr = async () =>{
-    const getSchedules = await APICtrl.fetch_schedule();
-    const setSchedule = await APICtrl.setSchedule(getSchedules)
-    return setSchedule
-  }
+  // const autoCapture =  function(){
+  //  return {
+  //   capture(index){
+       
+  //     },
+  //  }
+  // }
 
 
-
-  function _getLecSched(sched_arr,data){
-    sched_arr.forEach(({lecture})=>{
-      const lecture_obj = lecture;
-      // console.log(lecture);
-      Object.entries(lecture).forEach(([key, value]) => {
-        Object.entries(value).forEach(([key, value]) => {
-          if (key === "start") {
-            let room = lecture_obj["info"].room;
-            let faculty_id = lecture_obj["info"].faculty;
-            let subject_id = lecture_obj["info"].subject;
-
-            let hour = parseInt(value.hour);
-            let mins = parseInt(value.mins);
-            // console.log(value);
-
-            lecture_obj["time"].start.targetTime = targetTime.setHours(
-              hour,
-              mins,
-              0,
-              0
-            );
-
-            setInterval(() => {
-              // console.log(start_time);;
-              const currentTime = new Date().toLocaleTimeString("en-US", {
-                hour12: false,
-              });
-
-              let start_time = new Date(value.targetTime).toLocaleTimeString(
-                "en-US",
-                {
-                  hour12: false,
-                }
-              );
-
-              if (currentTime === start_time ) {
-                data({
-                  faculty_id: faculty_id,
-                  subject_id: subject_id,
-                  room: room,
-                  status: true
-              })
-              }else{
-                return null
-              }
-              
-            }, 1000);
-          } 
-          if (key === "end") {
-            let room = lecture_obj["info"].room;
-            let faculty_id = lecture_obj["info"].faculty;
-           
-            let hour = parseInt(value.hour);
-            let mins = parseInt(value.mins);
-            // console.log(value);
-            lecture_obj["time"].end.targetTime = targetTime.setHours(
-              hour,
-              mins,
-              0,
-              0
-            );
-
-            setInterval(() => {
-              // console.log(start_time);;
-              const currentTime = new Date().toLocaleTimeString("en-US", {
-                hour12: false,
-              });
-
-              let end_time = new Date(value.targetTime).toLocaleTimeString(
-                "en-US",
-                {
-                  hour12: false,
-                }
-              );
-              // function open_cam(room) {}
-              if (currentTime === end_time) {
-                  data({
-                      faculty_id: faculty_id,
-                      subject_id: subject_id,
-                      room: room,
-                      status: false
-                  })
-              }
-            }, 1000);
-          }
-        });
-      });
-    })
-  } 
-  function _getLabSched(sched_arr,data){
-    sched_arr.forEach(({laboratory})=>{
-      const laboratory_obj = laboratory;
-      Object.entries(laboratory).forEach(([key, value]) => {
-        Object.entries(value).forEach(([key, value]) => {
-          if (key === "start") {
-            let room = laboratory_obj["info"].room;
-            let faculty_id = laboratory_obj["info"].faculty;
-            let subject_id = laboratory_obj["info"].subject;
-
-            let hour = parseInt(value.hour);
-            let mins = parseInt(value.mins);
-            // console.log(value);
-
-            laboratory_obj["time"].start.targetTime = targetTime.setHours(
-              hour,
-              mins,
-              0,
-              0
-            );
-
-            setInterval(() => {
-              // console.log(start_time);;
-              const currentTime = new Date().toLocaleTimeString("en-US", {
-                hour12: false,
-              });
-
-              let start_time = new Date(value.targetTime).toLocaleTimeString(
-                "en-US",
-                {
-                  hour12: false,
-                }
-              );
-
-              if (currentTime === start_time ) {
-                data({
-                  faculty_id: faculty_id,
-                  subject_id: subject_id,
-                  room: room,
-                  status: true
-              })
-              }else{
-                return null
-              }
-              
-            }, 1000);
-          } 
-          if (key === "end") {
-            let room = laboratory_obj["info"].room;
-            let faculty_id = laboratory_obj["info"].faculty;
-           
-            let hour = parseInt(value.hour);
-            let mins = parseInt(value.mins);
-            // console.log(value);
-            laboratory_obj["time"].end.targetTime = targetTime.setHours(
-              hour,
-              mins,
-              0,
-              0
-            );
-
-            setInterval(() => {
-              // console.log(start_time);;
-              const currentTime = new Date().toLocaleTimeString("en-US", {
-                hour12: false,
-              });
-
-              let end_time = new Date(value.targetTime).toLocaleTimeString(
-                "en-US",
-                {
-                  hour12: false,
-                }
-              );
-              // function open_cam(room) {}
-              if (currentTime === end_time) {
-                  data({
-                      faculty_id: faculty_id,
-                      subject_id: subject_id,
-                      room: room,
-                      status: false
-                  })
-              }
-            }, 1000);
-          }
-        });
-      });
-    })
-  } 
-  
- 
   const UInterface = async () => {
     const paired_Device = await APICtrl.fetch_pairedDevice();
-    
     //main scanner
     paired_Device.forEach(async (device) => {
       if (device.device === "Scanner") {
@@ -640,6 +384,9 @@ const APPController = (function (APICtrl, UICtrl) {
     const new_setting = [];
 
     paired_Device.forEach((device, index) => {
+      // if (device.device !== "Scanner" && device.status !== "0") {
+      //   UICtrl.room_option(device.Room_name, device.deviceId);
+      // }
       UICtrl.setting(device.device, index);
 
       const setting_select = document.getElementById("setting-body_" + index);
@@ -703,7 +450,7 @@ const APPController = (function (APICtrl, UICtrl) {
 
             // $("#faculty").val("");
             setTimeout(() => {
-              UICtrl.scanner_generate_image(
+              UICtrl.generate_image(
                 `#result_container_${index}`,
                 "webcam",
                 `#scanner_camera_${index}`
@@ -720,47 +467,44 @@ const APPController = (function (APICtrl, UICtrl) {
       });
     });
 
-    // const sched_arr = await time_conversion();
-
-    const sched = await sched_arr();
-    let functionExecuted = false;
+    const sched_arr = await time_conversion();
+    const targetTime = new Date();
     let index = 0;
-    var interval = "10000";
-    const imageData = [];
-    
-    // var timeout = "10100";
+    var interval = "15000";
+    var timeout = "10100";
   
     function uploadVideoImages(video_id) {
-      const images = UICtrl.room_generate_image(video_id);
-      imageData.forEach((data,index) =>{
-        data.src = images[index]
-      })
-
-      if (imageData) {
-        imageData.forEach((image) => {
-          Webcam.upload(image.src, "./selfieCapture.php", function(code, text) {});
-
-         _sendDataToDb(image.faculty,image.subject)
-
+      const images = UICtrl.generate_image(video_id);
+      if (images) {
+        images.forEach(image => {
+          Webcam.upload(image, "./selfieCapture.php", function(code, text) {
+            console.log('Image uploaded with status ' + code + ': ' + text);
+          });
         });
+
       }
     }
-    function _sendDataToDb(facultyId,subjectId){
+    function send_facultyQr(facultyId,subjectId) {
       $.ajax({
         url: "selfieCapture.php",
         type: "POST",
-        data: {getImg:1, faculty: facultyId, subject:subjectId},
-        success: function(data){
-          console.log(data);
-        }
+        data: { faculty: facultyId,subject: subjectId },
       });
     }
-   
+
+
+              
+    setInterval(()=>{
+      uploadVideoImages('.video');
+      // send_facultyQr(facultyId,subjectId)
+    },interval)
+
 
     function open_cam(room, facultyId,subjectId) {
       paired_Device.forEach((device) => {
+     
         if (device.Room_name === room) {
-          console.log(device.deviceId);
+          // console.log(device.deviceId);
           const open = new Promise((resolve,reject)=>{
             const deviceId = device.deviceId
             resolve(deviceId)
@@ -768,95 +512,274 @@ const APPController = (function (APICtrl, UICtrl) {
           open.then((deviceId)=>{
             index++;
             //generate webcam video container
-            UICtrl.room_camera_container(index, facultyId, subjectId);
+            UICtrl.room_camera_container(index, facultyId, facultyId);
             //set webcam visual
-            UICtrl.room_camera(index, deviceId);    
-            const datas = {
-              faculty:facultyId,
-              subject:subjectId
-             }
-             imageData.push(datas)
-            if(!functionExecuted){
-              functionExecuted = true; 
-              setInterval(()=>{
-                uploadVideoImages('.video',facultyId,subjectId);
-              },interval)
-             }
-         })  
+            UICtrl.room_camera(index, deviceId); 
+
+        
+         })
+        }else{
+          console.log("Camera in the room");
         }
       })
-    }
  
+    }
+
     function close_cam(room, facultyId) {
-      var parent = document.querySelector(".camera_list");
-      var child = document.querySelector(`#${facultyId}`);
-      var video = document.querySelector(`[data-faculty ="${facultyId}"]`)
-      
-      console.log("executed_successfully");
-      if (parent && child) {
-        paired_Device.forEach(async (device) => {
-          if (device.Room_name === room) {
-            var constraints = {
-              video: {
-                deviceId: {
-                  exact: device.deviceId,
+        var parent = document.querySelector(".camera_list");
+        var child = document.querySelector(`#${facultyId}`);
+        var video = document.querySelector(`[data-faculty ="${facultyId}"]`)
+        
+        console.log("executed_successfully");
+        if (parent && child) {
+          paired_Device.forEach(async (device) => {
+            if (device.Room_name === room) {
+              var constraints = {
+                video: {
+                  deviceId: {
+                    exact: device.deviceId,
+                  },
                 },
-              },
-            };
+              };
 
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then((stream) => {
-        const tracks = stream.getTracks()
-        console.log(tracks);
-        tracks.forEach((track)=>{
-          if(track.kind ==="video"){
-            if(track.enabled){
-              track.stop();
-              track.enabled = false;
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((stream) => {
+          const tracks = stream.getTracks()
+          console.log(tracks);
+          tracks.forEach((track)=>{
+            if(track.kind ==="video"){
+              if(track.enabled){
+                track.stop();
+                track.enabled = false;
+              }
             }
-          }
-          video.srcObject = null;
-          video.stop;
+            video.srcObject = null;
+            video.stop;
+          })
         })
-      })
-      .catch(function (error) {
-        console.log(constraints);
-        console.log(error);
-      });
-
-        parent.removeChild(child);
-      }
+        .catch(function (error) {
+          console.log(constraints);
+          console.log(error);
         });
-      } else {
-        console.log("Parent or child element not found.");
-      }
-  }
-  
-    _getLecSched(sched, (result) => {
-      console.log(result);
-      if(result.status === true){ // set flag){
-       open_cam(result.room,result.faculty_id, result.subject_id)
-      
-      }else{
-        close_cam(result.room,result.faculty_id)  
-      }
 
-    });   
-    _getLabSched(sched, (result) => {
-      console.log(result);
-      if(result.status === true){ // set flag){
-       open_cam(result.room,result.faculty_id,result.subject_id)
-       const data = {
-        faculty:result.facultyId,
-        subject:result.subject_id
-       }
-      }else{
-        close_cam(result.room,result.faculty_id)  
-      }
+          parent.removeChild(child);
+        }
+          });
+        } else {
+          console.log("Parent or child element not found.");
+        }
+    }
 
-    });   
+    sched_arr.forEach(({ lecture, laboratory }) => {
+      const lecture_obj = lecture;
+      const laboratory_obj = laboratory;
+      Object.entries(lecture).forEach(([key, value]) => {
+        Object.entries(value).forEach(([key, value]) => {
+          if (key === "start") {
+            let room = lecture_obj["info"].room;
+            let faculty_id = lecture_obj["info"].faculty;
+            let hour = value.hour;
+            let mins = value.mins;
+            // console.log(value);
+            lecture_obj["time"].start.targetTime = targetTime.setHours(
+              hour,
+              mins,
+              0,
+              0
+            );
+
+            setInterval(() => {
+              // console.log(start_time);;
+              const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              });
+
+              let start_time = new Date(value.targetTime).toLocaleTimeString(
+                "en-US",
+                {
+                  hour12: false,
+                }
+              );
+
+              if (currentTime === start_time) {
+                try {
+                  
+                  open_cam(room, faculty_id);
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+               APICtrl.getSchedule();
+            }, 1000);
+          } 
+          if (key === "end") {
+            let room = laboratory_obj["info"].room;
+            let faculty_id = laboratory_obj["info"].faculty;
+           
+            let hour = value.hour;
+            let mins = value.mins;
+            // console.log(value);
+            lecture_obj["time"].end.targetTime = targetTime.setHours(
+              hour,
+              mins,
+              0,
+              0
+            );
+
+            setInterval(() => {
+              // console.log(start_time);;
+              const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              });
+
+              let end_time = new Date(value.targetTime).toLocaleTimeString(
+                "en-US",
+                {
+                  hour12: false,
+                }
+              );
+              // function open_cam(room) {}
+              if (currentTime === end_time) {
+                close_cam(room, faculty_id);
+                console.log("close");
+              }
+            }, 1000);
+          }
+        });
+      });
+      Object.entries(laboratory).forEach(([key, value]) => {
+        Object.entries(value).forEach(([key, value]) => {
+          if (key === "start") {
+            let room = laboratory_obj["info"].room;
+            let faculty_id = laboratory_obj["info"].faculty;
+            let hour = value.hour;
+            let mins = value.mins;
+            // console.log(value);
+            laboratory_obj["time"].start.targetTime = targetTime.setHours(
+              hour,
+              mins,
+              0,
+              0
+            );
+
+            setInterval(() => {
+              // console.log(start_time);;
+              const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              });
+
+              let start_time = new Date(value.targetTime).toLocaleTimeString(
+                "en-US",
+                {
+                  hour12: false,
+                }
+              );
+
+              if (currentTime === start_time) {
+                try {
+                  
+                  open_cam(room, faculty_id);
+                
+
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+            }, 1000);
+          }
+          if (key === "end") {
+            let room = laboratory_obj["info"].room;
+            let faculty_id = laboratory_obj["info"].faculty;
+            let hour = value.hour;
+            let mins = value.mins;
+            // console.log(value);
+            laboratory_obj["time"].end.targetTime = targetTime.setHours(
+              hour,
+              mins,
+              0,
+              0
+            );
+
+            setInterval(() => {
+              // console.log(start_time);;
+              const currentTime = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+              });
+
+              let end_time = new Date(value.targetTime).toLocaleTimeString(
+                "en-US",
+                {
+                  hour12: false,
+                }
+              );
+              // function open_cam(room) {}
+              if (currentTime === end_time) {
+                close_cam(room, faculty_id);
+                console.log("close");
+              }
+            }, 1000);
+          }
+        });
+      });
+    });
   };
+
+  const time_conversion = async () => {
+    const schedule = await APICtrl.fetch_schedule();
+    // const paired_Device = await APICtrl.fetch_pairedDevice();
+    const sched_arr = [];
+
+    schedule.forEach((sched) => {
+      const { facultyID, time_lab, time_lec, lab_room_name, lec_room_name } =
+        sched;
+
+      let lec_start_time = time_lec.slice(0, 9).toString();
+      let lec_end_time = time_lec.slice(14, 22).toString();
+      let lab_start_time = time_lab.slice(0, 9).toString();
+      let lab_end_time = time_lab.slice(14, 22).toString();
+
+
+      const schedulels = {
+        lecture: {
+          time: {
+            start: {
+              hour: lec_start_time.slice(0, 2),
+              mins: lec_start_time.slice(3, 5),
+            },
+            end: {
+              hour: lec_end_time.slice(0, 2),
+              mins: lec_end_time.slice(3, 5),
+            },
+          },
+          info: {
+            faculty: facultyID,
+            room: lec_room_name,
+          },
+        },
+        laboratory: {
+          time: {
+            start: {
+              hour: lab_start_time.slice(0, 2),
+              mins: lab_start_time.slice(3, 5),
+            },
+            end: {
+              id: 3,
+              hour: lab_end_time.slice(0, 2),
+              mins: lab_end_time.slice(3, 5),
+            },
+          },
+          info: {
+            faculty: facultyID,
+            room: lab_room_name,
+          },
+        },
+      };
+      sched_arr.push(schedulels);
+    });
+    return sched_arr;
+  };
+
   
 
   DomCtrl.sync_camera.addEventListener("click", async () => {

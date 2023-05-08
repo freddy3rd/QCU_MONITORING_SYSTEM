@@ -18,7 +18,7 @@ if(isset($_POST['prof_schedule'])){
 	include 'conn.php';
     // $candidate_name = $_POST['candidate_name'];
     
-    $result = mysqli_query($conn, "SELECT * FROM (SELECT schedule_setup.id,schedule_setup.facultyID, schedule_setup.type,schedule_setup.lec_room,list_of_rooms.Room_name as lec_room_name,schedule_setup.time_lec FROM schedule_setup inner join list_of_rooms ON schedule_setup.lec_room = list_of_rooms.ID) lec_setup 
+    $result = mysqli_query($conn, "SELECT * FROM (SELECT schedule_setup.id,schedule_setup.facultyID,schedule_setup.subjectID, schedule_setup.type,schedule_setup.lec_room,list_of_rooms.Room_name as lec_room_name,schedule_setup.time_lec FROM schedule_setup inner join list_of_rooms ON schedule_setup.lec_room = list_of_rooms.ID) lec_setup 
     INNER JOIN (SELECT schedule_setup.id, schedule_setup.type,schedule_setup.lab_room, schedule_setup.time_lab, list_of_rooms.Room_name as lab_room_name,schedule_setup.campus  FROM schedule_setup inner join list_of_rooms ON schedule_setup.lab_room = list_of_rooms.ID )lab_setup ON lec_setup.id = lab_setup.id");
     $data = array();
     while ($row = mysqli_fetch_object($result)) {
