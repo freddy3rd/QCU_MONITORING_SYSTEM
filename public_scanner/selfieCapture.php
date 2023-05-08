@@ -4,26 +4,26 @@ include 'conn.php';
 
 
 
-mysqli_begin_transaction($conn);
-try {
-    //code...
-    $imageName = uniqid() . ' .jpeg'; 
+    mysqli_begin_transaction($conn);
+    try {
+        //code...
+        $imageName = uniqid() . ' .jpeg'; 
 
- $stmt = $conn->prepare("INSERT INTO  attendance_attachments(subjectID, facultyID, attachment)  VALUES (?, ?, ?)");
- $stmt->bind_param("sss",$_POST['subject'], $_POST['faculty'], $imageName);
- $stmt->execute();
-
-
-    // Upload the image using the webcam module
-$tmpName = $_FILES['webcam']['tmp_name'];
-move_uploaded_file($tmpName, './img/' . $imageName);
-} catch (\Throwable $th) {
-    mysqli_rollback($conn);
-    throw $e;
-}
+    $stmt = $conn->prepare("INSERT INTO  attendance_attachments(subjectID, facultyID, attachment)  VALUES (?, ?, ?)");
+    $stmt->bind_param("sss",$_POST['subject'], $_POST['faculty'], $imageName);
+    $stmt->execute();
 
 
-$conn->close();
+        // Upload the image using the webcam module
+    $tmpName = $_FILES['webcam']['tmp_name'];
+    move_uploaded_file($tmpName, './img/' . $imageName);
+    } catch (\Throwable $th) {
+        mysqli_rollback($conn);
+        throw $e;
+    }
+
+
+
    
 
 
