@@ -2,37 +2,29 @@
 session_start();
 include 'conn.php';
 
-$imageName = uniqid() . ' .jpeg'; 
 
 
-if(isset($_POST['getImg']) && isset($_FILES["webcam"]["tmp_name"])){
-    $facultyId = $_POST['faculty'];
-    $subjectId = $_POST['subject'];
+mysqli_begin_transaction($conn);
+try {
+    //code...
+    $imageName = uniqid() . ' .jpeg'; 
 
-    $sql = "INSERT INTO attendance_attachments(subjectID, facultyID, attachment) VALUES ('$subjectId', '$facultyId', '$imageName')";
-    $conn->query($sql);
+ $stmt = $conn->prepare("INSERT INTO  attendance_attachments(subjectID, facultyID, attachment)  VALUES (?, ?, ?)");
+ $stmt->bind_param("sss",$_POST['subject'], $_POST['faculty'], $imageName);
+ $stmt->execute();
 
-    $tmpName = $_FILES ["webcam"]["tmp_name"];
-    move_uploaded_file ($tmpName, 'img/' . $imageName); //Upload to img folder
-    // imgSrc( $facultyId,$subjectId );
+
+    // Upload the image using the webcam module
+$tmpName = $_FILES['webcam']['tmp_name'];
+move_uploaded_file($tmpName, './img/' . $imageName);
+} catch (\Throwable $th) {
+    mysqli_rollback($conn);
+    throw $e;
 }
 
-// function imgSrc($subject,$faculty){
-    if (){
 
-      
-    
-    }
-    
-// }
-// if(isset($_POST['getImg'])){
-  
-
-//     $sql = "UPDATE attendance_attachments
-//     SET subjectID = ' $subjectID ', facultyID = 'facultyID' WHERE id = id";
-//     // $sql = "INSERT INTO attendance_attachments(subjectID, facultyID, attachment) VALUES ('$subjectID', '$facultyID', '$imageName')";
-//     $conn->query($sql);
-// }
+$conn->close();
+   
 
 
 
@@ -70,7 +62,7 @@ if(isset($_POST['getImg']) && isset($_FILES["webcam"]["tmp_name"])){
 //     $subjectID = $_POST['subject'];
 
 //     $tmpName = $_FILES['webcam']['tmp_name'];
-//     // $imageName = uniqid()  . '.jpeg';
+//     $imageName = uniqid()  . '.jpeg';
 //     move_uploaded_file($tmpName, './img/' . $imageName);
 
 //     $sql = "INSERT INTO attendance_attachments(subjectID, facultyID, attachment) VALUES ('$subjectID', '$facultyID', '$imageName')";
