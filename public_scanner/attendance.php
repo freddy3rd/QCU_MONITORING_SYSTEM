@@ -54,7 +54,7 @@
 					$nsql = "INSERT INTO attendance (facultyID, date, time_in, status, subjectID) VALUES ('$facultyID', '$date_now', '$time', '1', '$subjectID')";
 					if($conn->query($nsql)){
 						$output['facultyId'] = $row['facultyID'];
-						$output['message'] = 'Time in: '.$row['faculty_firstname'].' '.$row['faculty_lastname'].' ';
+						$output['message'] = 'Time in: '.$row['faculty_firstname'].' '.$row['faculty_lastname'].'';
 
 					}
 					else{

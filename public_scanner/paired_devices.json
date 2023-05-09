@@ -2,15 +2,15 @@
     {
         "Room_name": "a400",
         "device": "Scanner",
-        "deviceId": "f58f83283b2aef921e716ce31dd9a04f3cedea997e0a612737e0ba92415f4cfc",
-        "label": "2E-WCFHD (1224:2a25)",
+        "deviceId": "a905aac72343476d15b06fdeb3ff79846bda6ffae9724c3434048dc519cb5394",
+        "label": "Integrated Camera (13d3:784b)",
         "status": "1"
     },
     {
         "Room_name": "a401",
         "device": "Monitoring",
-        "deviceId": "3f2bd9deec78c2ddcbd519294fc525ab3fca13e8e35b52acbb1f8ad373cc2a95",
-        "label": "Integrated Camera (13d3:784b)",
+        "deviceId": "5fd6a885a1276ae0500e36f48ae5def01a0ed7cecaa6d4df4688f60ba952d4ae",
+        "label": "USB CAMERA (1224:2a25)",
         "status": "1"
     },
     {
