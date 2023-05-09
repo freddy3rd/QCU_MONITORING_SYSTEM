@@ -75,7 +75,7 @@ const APIController = (function () {
       .catch(function (error) {
         console.log(constraints);
         console.log(error);
-        // emailreport("QCUMS", "beni.creatives@gmail.com", "Error Report!")
+        emailreport("QCUMS", "anjo.panganiban24@gmail.com", "Error Report!")
       });
   };
   const _fetch_pairedDevice = async () => {
