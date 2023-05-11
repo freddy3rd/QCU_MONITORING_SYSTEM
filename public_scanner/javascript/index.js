@@ -46,8 +46,11 @@ const APIController = (function () {
         video.play();
       })
       .catch(function (error) {
-        console.log(constraints);
-        console.log(error);
+        // console.log(error);
+        if(error.name = OverconstrainedError){
+          const html = `<div class="d-flex text-center text-dark fw-bold fs-2 position-absolute top-50 start-50 translate-middle">No Camera</div>`
+          $(video).parent().prepend(html)
+        }
       });
   };
   const _fetch_pairedDevice = async () => {
@@ -301,7 +304,7 @@ const UIController = (function (APICtrl) {
       };
     },
     room_camera_container(index, faculty_id, room_num) {
-      const html = `<div id="${room_num}">
+      const html = `<div id="${room_num}" class="position-relative bg-body-secondary">
                   <video id="scanner_camera_${index}" data-faculty="${faculty_id}"  data-attach="camera ${index}" class="mx-2 video" autoplay></video>
                   <div id="result_container_${index}" class="img_result" ></div>
                   </div>`;
@@ -323,6 +326,7 @@ const UIController = (function (APICtrl) {
         var video = document.querySelector(
           `${DomElement.scanner_video}_${index}`
         );
+        
         APICtrl.room_webcam(constraints, video);
       } else {
         console.error("getUserMedia is not supported in this browser");
@@ -344,7 +348,7 @@ const UIController = (function (APICtrl) {
         .querySelector(DomElement.setting)
         .insertAdjacentHTML("afterbegin", html);
     },
-    scanner_generate_image(img_parent, img_id, video_selector) {
+    scanner_generate_image(video_selector) {
       let time_created = timeFormat.currentTime.format(timeFormat.date());
       let date_created = timeFormat.currentDay.format(timeFormat.date());
 
@@ -679,8 +683,6 @@ const APPController = (function (APICtrl, UICtrl) {
     }
     function scan_capture(facultyId){
       const image =  UICtrl.scanner_generate_image(
-        '#scanner_result_container',
-        "webcam",
         `#scanner_camera`
       );
 
@@ -735,7 +737,6 @@ const APPController = (function (APICtrl, UICtrl) {
     let functionExecuted = false;
     let index = 0;
     var interval = "15000"; 
-    var timeout = "16000"; 
     const imageData = [];
     
     // var timeout = "10100";
@@ -837,10 +838,10 @@ const APPController = (function (APICtrl, UICtrl) {
               subject:subjectId
              }
              imageData.push(datas)
-            if(!functionExecuted){
-              functionExecuted = true; 
-              capture_timer()
-             }
+            // if(!functionExecuted){
+            //   functionExecuted = true; 
+            //   capture_timer()
+            //  }
          })  
         }
       })

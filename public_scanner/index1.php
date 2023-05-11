@@ -73,12 +73,7 @@
 </head>
 <body class=" bg-body-secondary">
  
-<script type="text/javascript">
 
-   
-    // }, 1000);
-
-</script>
   <div class="container-fluid row">
     <div class="col-md-4 d-flex align-items-center justify-content-center position-relative p-4" style="background:#065280;min-height:100vh">
       <div class=" text-center fs-3 text-light p-4 position-fixed top-0 left-0" >
@@ -144,7 +139,7 @@
 
         
         <h3 class="text-center fw-bold fs-3 text-danger py-4"><i class="fa-solid fa-camera"></i> Live Camera</h3>
-        <div class="p-4 d-flex flex-wrap justify-content-center align-item-center camera_list"></div>
+        <div class="p-4 d-flex flex-wrap justify-content-center align-item-center gap-2 camera_list"></div>
     </div>
 
     <!--SETTINGS MODAL-->
