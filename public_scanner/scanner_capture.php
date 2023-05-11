@@ -1,25 +1,33 @@
 <?php
+session_start();
+include 'conn.php';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
   $faculty = $_POST['faculty'];
+  $imgDataUrl = $_POST['image'];
+
   $sql = "SELECT * FROM faculty WHERE facultyID = '$faculty'";
   $result = $conn->query($sql);
 
   if ($result->num_rows > 0) {
       $facultyID = $result->fetch_assoc()['facultyID'];
 
-      $sql = "SELECT * FROM attendance WHERE facultyID = '$facultyID' ORDER BY id DESC LIMIT 1";
+      $sql = "SELECT * FROM attendance WHERE facultyID = '$facultyID'";
       $result = $conn->query($sql);
 
       if ($result->num_rows > 0) {
           $attendance = $result->fetch_assoc();
-          $attendanceID = $attendance['id'];
+          $subjectID = $attendance['subjectID'];
           $facultyID = $attendance['facultyID'];
 
-          $tmpName = $_FILES['webcam']['tmp_name'];
-          $imageName = date('Y.m.d') . " - " . date('h.i.sa') . '.jpeg';
-          move_uploaded_file($tmpName, './img/' . $imageName);
+          $img = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imgDataUrl));
+          $filename = '' . uniqid() . '.png';
+          // Write the binary string to a file on the server
+          $filepath = './img/'. $filename;
+          file_put_contents($filepath, $img);
 
-          $sql = "INSERT INTO attendance_attachments(attendanceID, facultyID, attachment) VALUES ('$attendanceID', '$facultyID', '$imageName')";
+          $sql = "INSERT INTO attendance_attachments(subjectID, facultyID, attachment) VALUES ('$subjectID', '$facultyID', '$filename')";
           $conn->query($sql);
 
           header("Location: index1.php");
@@ -27,9 +35,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 
-if (isset($_FILES['webcam']['tmp_name'])) {
-  $tmpName = $_FILES['webcam']['tmp_name'];
-  $imageName = uniqid()  . '.jpeg';
-  move_uploaded_file($tmpName, './img/' . $imageName);
-}
+
 ?>

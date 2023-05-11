@@ -24,8 +24,8 @@ include 'conn.php';
   $filepath = './img/'. $filename;
   file_put_contents($filepath, $img);
 
-    $stmt = $conn->prepare("INSERT INTO  attendance_attachments(subjectID, facultyID, attachment)  VALUES (?, ?, ?)");
-    $stmt->bind_param("sss",$subjectId, $facultyId, $filename);
-    $stmt->execute();
+   $stmt = $conn->prepare("INSERT INTO  attendance_attachments(subjectID, facultyID, attachment)  VALUES (?, ?, ?)");
+   $stmt->bind_param("sss",$subjectId, $facultyId, $filename);
+   $stmt->execute();
 
   ?>

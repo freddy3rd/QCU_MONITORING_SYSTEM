@@ -362,12 +362,9 @@ const UIController = (function (APICtrl) {
       ctx.fillText(data_time, 20, 40);
       var dataUrl_1 = canvas.toDataURL();
 
-      document.querySelector(img_parent).innerHTML =
-        '<img id= "' + img_id + '" src = "' + dataUrl_1 + '">';
+      return dataUrl_1
 
-      var image_1 = document.querySelector(`#${img_id}`).src;
-
-      Webcam.upload(image_1, "./scanner_capture.php", function (code, text) {});
+    
     },
     room_generate_image(video_id) {
     // generate_image(video_id) {
@@ -680,6 +677,19 @@ const APPController = (function (APICtrl, UICtrl) {
         selectContainer.add(option);
       }
     }
+    function scan_capture(facultyId){
+      const image =  UICtrl.scanner_generate_image(
+        '#scanner_result_container',
+        "webcam",
+        `#scanner_camera`
+      );
+
+      $.ajax({
+        url: "scanner_capture.php",
+        type: "POST",
+        data: {image:image,faculty: facultyId}
+      });
+    }
     // await APICtrl.sendAttendance();
 
     $("#attendance").submit(function (e) {
@@ -693,6 +703,7 @@ const APPController = (function (APICtrl, UICtrl) {
         dataType: "json",
         success: function (response) {
           $("#facultyId").val(response.facultyId);
+
           if (response.error) {
             $(".alert").hide();
             $(".alert-danger").show();
@@ -702,13 +713,10 @@ const APPController = (function (APICtrl, UICtrl) {
             $(".alert-success").show();
             $(".message").html(response.message);
 
+
             // $("#faculty").val("");
             setTimeout(() => {
-              UICtrl.scanner_generate_image(
-                `#result_container_${index}`,
-                "webcam",
-                `#scanner_camera_${index}`
-              );
+              scan_capture($("#facultyId").val())
             }, 5000); //5s before capture
           }
           setTimeout(() => {
