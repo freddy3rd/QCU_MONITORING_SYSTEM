@@ -2,21 +2,21 @@
     {
         "Room_name": "a400",
         "device": "Scanner",
-        "deviceId": "a905aac72343476d15b06fdeb3ff79846bda6ffae9724c3434048dc519cb5394",
+        "deviceId": "d2f05d6d1e768c5e061faf51758ad468c9615bbaf957dbb66259c5a187ffa4a0",
         "label": "Integrated Camera (13d3:784b)",
         "status": "1"
     },
     {
         "Room_name": "a401",
         "device": "Monitoring",
-        "deviceId": "5fd6a885a1276ae0500e36f48ae5def01a0ed7cecaa6d4df4688f60ba952d4ae",
-        "label": "USB CAMERA (1224:2a25)",
+        "deviceId": "b77f699a3d6b0d8a4d916f80eea909e664b445d9ca141748e6116ce243e5958f",
+        "label": "2E-WCFHD (1224:2a25)",
         "status": "1"
     },
     {
         "Room_name": "ac407",
         "device": "Monitoring",
-        "deviceId": "e6d90294a19aa04edc99c2c557fd6d50238c2c75409c9f611664fe1efeec32f7",
+        "deviceId": "59f4bc2436ef3c83566c589ca9ec04a0ec373f3c03f7c2ea6a78476d25de9cf7",
         "label": "HD WebCam (0bda:57f3)",
         "status": "0"
     }

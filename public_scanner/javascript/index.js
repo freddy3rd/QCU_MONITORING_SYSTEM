@@ -367,7 +367,7 @@ const UIController = (function (APICtrl) {
 
       var image_1 = document.querySelector(`#${img_id}`).src;
 
-      Webcam.upload(image_1, "./selfieCapture.php", function (code, text) {});
+      Webcam.upload(image_1, "./scanner_capture.php", function (code, text) {});
     },
     room_generate_image(video_id) {
     // generate_image(video_id) {
@@ -443,50 +443,8 @@ const APPController = (function (APICtrl, UICtrl) {
   }
   
 
-  function _getLecSched(paired_Device,sched_arr,data){
-    function close_cam(room, facultyId) {
-      var parent = document.querySelector(".camera_list");
-      var child = document.querySelector(`#${facultyId}`);
-      var video = document.querySelector(`[data-faculty ="${facultyId}"]`)
-      
-      console.log("executed_successfully");
-      if (parent && child) {
-        paired_Device.forEach(async (device) => {
-          if (device.Room_name === room) {
-            var constraints = {
-              video: {
-                deviceId: {
-                  exact: device.deviceId,
-                },
-              },
-            };
-  
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then((stream) => {
-        const tracks = stream.getTracks()
-        console.log(tracks);
-        tracks.forEach((track)=>{
-          if(track.kind ==="video"){
-            if(track.enabled){
-              track.stop();
-              track.enabled = false;
-            }
-          }
-          video.srcObject = null;
-          video.stop;
-        })
-      })
-      .catch(function (error) {
-        console.log(constraints);
-        console.log(error);
-      });
-  
-        parent.removeChild(child);
-      }
-        });
-      } 
-  }
+  function _getLecSched(sched_arr,data){
+    
     sched_arr.forEach(({lecture})=>{
       const lecture_obj = lecture;
       console.log(lecture);
@@ -537,7 +495,7 @@ const APPController = (function (APICtrl, UICtrl) {
           if (key === "end") {
             let room = lecture_obj["info"].room;
             let faculty_id = lecture_obj["info"].faculty;
-           
+            let subject_id = lecture_obj["info"].subject;
             let hour = parseInt(value.hour);
             let mins = parseInt(value.mins);
             // console.log(value);
@@ -562,13 +520,13 @@ const APPController = (function (APICtrl, UICtrl) {
               );
               // function open_cam(room) {}
               if (currentTime === end_time) {
-                close_cam(room, faculty_id);
-                  // data({
-                  //     faculty_id: faculty_id,
-                  //     subject_id: subject_id,
-                  //     room: room,
-                  //     status: false
-                  // })
+                // close_cam(room, faculty_id);
+                  data({
+                      faculty_id: faculty_id,
+                      subject_id: subject_id,
+                      room: room,
+                      status: false
+                  })
               }
             }, 1000);
           }
@@ -576,49 +534,7 @@ const APPController = (function (APICtrl, UICtrl) {
       });
     })
   } 
-  function _getLabSched(paired_Device,sched_arr,data){
-    function close_cam(room, facultyId) {
-      var parent = document.querySelector(".camera_list");
-      var child = document.querySelector(`#${facultyId}`);
-      var video = document.querySelector(`[data-faculty ="${facultyId}"]`)
-      
-      if (parent && child) {
-        paired_Device.forEach(async (device) => {
-          if (device.Room_name === room) {
-            var constraints = {
-              video: {
-                deviceId: {
-                  exact: device.deviceId,
-                },
-              },
-            };
-  
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then((stream) => {
-        const tracks = stream.getTracks()
-        console.log(tracks);
-        tracks.forEach((track)=>{
-          if(track.kind ==="video"){
-            if(track.enabled){
-              track.stop();
-              track.enabled = false;
-            }
-          }
-          video.srcObject = null;
-          video.stop;
-        })
-      })
-      .catch(function (error) {
-        console.log(constraints);
-        console.log(error);
-      });
-  
-        parent.removeChild(child);
-      }
-        });
-      } 
-  }
+  function _getLabSched(sched_arr,data){
     sched_arr.forEach(({laboratory})=>{
       const laboratory_obj = laboratory;
       Object.entries(laboratory).forEach(([key, value]) => {
@@ -668,7 +584,7 @@ const APPController = (function (APICtrl, UICtrl) {
           if (key === "end") {
             let room = laboratory_obj["info"].room;
             let faculty_id = laboratory_obj["info"].faculty;
-           
+            let subject_id = laboratory_obj["info"].subject;
             let hour = parseInt(value.hour);
             let mins = parseInt(value.mins);
             // console.log(value);
@@ -693,7 +609,12 @@ const APPController = (function (APICtrl, UICtrl) {
               );
               // function open_cam(room) {}
               if (currentTime === end_time) {
-                close_cam(room, faculty_id);
+                data({
+                  faculty_id: faculty_id,
+                  subject_id: subject_id,
+                  room: room,
+                  status: false
+              })
               }
             }, 1000);
           }
@@ -805,7 +726,8 @@ const APPController = (function (APICtrl, UICtrl) {
     const sched = await sched_arr();
     let functionExecuted = false;
     let index = 0;
-    var interval = "10000"; 
+    var interval = "15000"; 
+    var timeout = "16000"; 
     const imageData = [];
     
     // var timeout = "10100";
@@ -817,57 +739,76 @@ const APPController = (function (APICtrl, UICtrl) {
 
       if (imageData) {
         imageData.forEach((image) => {
-          Webcam.upload(image.src, "./selfieCapture.php", function(code, text) {});
-
-         _sendDataToDb(image.faculty,image.subject)
+          // Webcam.upload(image.src, "./selfieCapture.php", function(code, text) {});
+         _sendDataToDb(image.src,image.faculty,image.subject)
 
         });
       }
     }
-    function _sendDataToDb(facultyId,subjectId){
+    function _sendDataToDb(src,facultyId,subjectId){
       $.ajax({
         url: "selfieCapture.php",
         type: "POST",
-        data: {faculty: facultyId, subject:subjectId},
+        data: {image:src,faculty: facultyId, subject:subjectId},
         success: function(data){
           console.log(data);
         }
       });
     }
    
-    // function uploadVideoImages(video_id) {
-    //   const images = UICtrl.room_generate_image(video_id);
-    //   const formData = new FormData();
+    function close_cam(room, facultyId) {
+      var parent = document.querySelector(".camera_list");
+      var child = document.querySelector(`#${facultyId}`);
+      var video = document.querySelector(`[data-faculty ="${facultyId}"]`)
 
-    //   imageData.forEach((data,index) =>{
-    //     data.src = images[index]
-    //   })
+      if (parent && child) {
+        paired_Device.forEach(async (device) => {
+          if (device.Room_name === room) {
+            var constraints = {
+              video: {
+                deviceId: {
+                  exact: device.deviceId,
+                },
+              },
+            };
+  
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then((stream) => {
+        const tracks = stream.getTracks()
+        console.log(tracks);
+        tracks.forEach((track)=>{
+          if(track.kind ==="video"){
+            if(track.enabled){
+              track.stop();
+              track.enabled = false;
+            }
+          }
+          video.srcObject = null;
+          video.stop;
+        })
+      })
+      .catch(function (error) {
+        console.log(constraints);
+        console.log(error);
+      });
+  
+        parent.removeChild(child);
+      }
+        });
+      } 
+    }
 
-    //   if (imageData) {
-    //     imageData.forEach((image,index) => {
-    //       console.log(image);
-    //       Object.entries(image).forEach(([key, value]) => {
-    //         formData.append(`${key}[${index}]`, JSON.stringify(value));
-    //       });                      
-    //     });
-    //     fetch('selfieCapture.php', {
-    //       method: 'POST',
-    //       body: formData
-    //     })
-    //     .then(response => {
-    //       if (!response.ok) {
-    //         throw new Error('Network response was not ok');
-    //       }
-    //       return response.json();
-    //     })
-    //     .then(data => {
-    //       console.log(data);
-    //     })
-    //     .catch(error => {
-    //       console.error('There was a problem with the fetch operation:', error);
-    //     });
-    //   }
-    // }
+    let timeInterval
+    function capture_timer(){
+      timeInterval = setInterval(()=>{
+        uploadVideoImages('.video');
+      },interval)
+     }
+  
+     function stopInterval() {
+      clearInterval(timeInterval);
+    }
 
     function open_cam(room, facultyId,subjectId) {
       paired_Device.forEach((device) => {
@@ -880,7 +821,7 @@ const APPController = (function (APICtrl, UICtrl) {
           open.then((deviceId)=>{
             index++;
             //generate webcam video container
-            UICtrl.room_camera_container(index, facultyId, subjectId);
+            UICtrl.room_camera_container(index, facultyId, facultyId);
             //set webcam visual
             UICtrl.room_camera(index, deviceId);    
             const datas = {
@@ -890,39 +831,33 @@ const APPController = (function (APICtrl, UICtrl) {
              imageData.push(datas)
             if(!functionExecuted){
               functionExecuted = true; 
-              setInterval(()=>{
-                uploadVideoImages('.video');
-              },interval)
+              capture_timer()
              }
          })  
         }
       })
     }
 
-   
-
-
-  
-    _getLecSched(paired_Device, sched, (result) => {
+    _getLecSched(sched, (result) => {
      
       if(result.status === true){ // set flag){
         console.log(result);
        open_cam(result.room,result.faculty_id, result.subject_id)
-      }
-
-
-      // if(result.status === false){ 
-       
-      // }
-
-    });   
-    _getLabSched(paired_Device, sched, (result) => {
-      console.log(result);
-      if(result.status === true){ // set flag){
-       open_cam(result.room,result.faculty_id,result.subject_id)
-
       }else{
-        close_cam(result.room,result.faculty_id)  
+        // console.log(result);
+        stopInterval()
+        close_cam(result.room,result.faculty_id)
+      }
+    });   
+    _getLabSched(sched, (result) => {
+      
+      if(result.status === true){ // set flag){
+        console.log(result);
+       open_cam(result.room,result.faculty_id, result.subject_id)
+      }else{
+        // console.log(result);
+        stopInterval()
+        close_cam(result.room,result.faculty_id)
       }
 
     });   
