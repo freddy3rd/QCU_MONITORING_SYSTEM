@@ -164,7 +164,7 @@ const APIController = (function () {
       sched_arr.push(schedulels);
     });
     return sched_arr;
-  }
+  } 
   const _scanner = async (camera) => {
     let video = document.querySelector("#scanner_camera");
 
@@ -704,6 +704,7 @@ const APPController = (function (APICtrl, UICtrl) {
         data: attendance,
         dataType: "json",
         success: function (response) {
+          console.log(response);
           $("#facultyId").val(response.facultyId);
 
           if (response.error) {
@@ -715,7 +716,7 @@ const APPController = (function (APICtrl, UICtrl) {
             $(".alert-success").show();
             $(".message").html(response.message);
 
-
+  
             // $("#faculty").val("");
             setTimeout(() => {
               scan_capture($("#facultyId").val())
@@ -795,6 +796,11 @@ const APPController = (function (APICtrl, UICtrl) {
           }
           video.srcObject = null;
           video.stop;
+          $.ajax({
+            url: "attendance_out.php",
+            type: "POST",
+            data: {out:1,faculty: facultyId}
+          });
         })
       })
       .catch(function (error) {
@@ -838,10 +844,10 @@ const APPController = (function (APICtrl, UICtrl) {
               subject:subjectId
              }
              imageData.push(datas)
-            // if(!functionExecuted){
-            //   functionExecuted = true; 
-            //   capture_timer()
-            //  }
+            if(!functionExecuted){
+              functionExecuted = true; 
+              capture_timer()
+             }
          })  
         }
       })
