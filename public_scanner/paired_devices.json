@@ -1,23 +1,20 @@
 [
     {
-        "Room_name": "a400",
+        "Room_name": "Room1",
         "device": "Scanner",
-        "deviceId": "94c6bb2ccea78dbb205ca465413e90bc848d2a65860005f97233cb1e56696aba",
-        "label": "2E-WCFHD (1224:2a25)",
-        "status": "1"
+        "deviceId": "a905aac72343476d15b06fdeb3ff79846bda6ffae9724c3434048dc519cb5394",
+        "label": "Integrated Camera (13d3:784b)"
     },
     {
-        "Room_name": "a401",
-        "device": "Monitoring",
-        "deviceId": "e8819c095969538c16cbffce33855eb2bbd9cdac3c69aaacba68fc8dc32d9e02",
-        "label": "Integrated Camera (13d3:784b)",
-        "status": "1"
+        "Room_name": "Room2",
+        "device": "Monitor",
+        "deviceId": "e6d90294a19aa04edc99c2c557fd6d50238c2c75409c9f611664fe1efeec32f7",
+        "label": "HD WebCam (0bda:57f3)"
     },
     {
-        "Room_name": "ac407",
-        "device": "Monitoring",
-        "deviceId": "59f4bc2436ef3c83566c589ca9ec04a0ec373f3c03f7c2ea6a78476d25de9cf7",
-        "label": "HD WebCam (0bda:57f3)",
-        "status": "0"
+        "Room_name": "Room3",
+        "device": "Monitor",
+        "deviceId": "8bdd612d06c11a12b6a8995606ecc8a0a95946a27276b3ba74cc28148affb4a8",
+        "label": "USB Camera (0c45:6340)"
     }
 ]

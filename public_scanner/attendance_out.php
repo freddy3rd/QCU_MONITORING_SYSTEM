@@ -25,7 +25,7 @@ if(isset($_POST['out'])){
             $time = date("h:i:sa"); // Input time in 12-hour format
             $time_24hrs_format = date('H:i:s', strtotime($time));
             $sql = "UPDATE attendance SET time_out = '$time_24hrs_format', status ='0' WHERE facultyID = '$facultyID' AND status ='1'";
-            // $query = $conn->query($sql);
+            $query = $conn->query($sql);
         }
 
 

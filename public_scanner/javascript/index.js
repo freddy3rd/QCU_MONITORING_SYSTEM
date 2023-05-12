@@ -23,16 +23,14 @@ const APIController = (function () {
     const available_camera = [];
     deviceInfo.forEach((info, index) => {
       info.device = Rooms[index].Device;
-      info.status = Rooms[index].status;
-      info.Room_name = Rooms[index].Room_name;
+      info.Room_name = Rooms[index].room;
       // info.Device = Rooms[index].Device;
-      const { Room_name, device, deviceId, label, status } = info;
+      const { Room_name, device, deviceId, label} = info;
       const devices = {
         Room_name: Room_name,
         device: device,
         deviceId: deviceId,
         label: label,
-        status: status,
       };
       available_camera.push(devices);
     });
@@ -103,6 +101,13 @@ const APIController = (function () {
       data: { paired_devices: 1, devices: data },
     });
   };
+  const _getRooms = async (data) => {
+    $.ajax({
+      method: "POST",
+      url: "fetchRoomList.php",
+      data: { sync_room: 1, devices: data },
+    });
+  };
 
   const _getSchedule = async () => {
     $.ajax({
@@ -115,49 +120,52 @@ const APIController = (function () {
     const sched_arr = [];
     // const paired_Device = await APICtrl.fetch_pairedDevice();
     schedule.forEach((sched) => {
-      const { facultyID, subjectID,time_lab, time_lec, lab_room_name, lec_room_name } =
+      const { facultyID, subjectID, lec_start_time, lec_end_time, lab_start_time, lab_end_time, lecture_room, laboratory_room,date,day} =
         sched;
 
-      let lec_start_time = time_lec.slice(0, 9).toString();
-      let lec_end_time = time_lec.slice(14, 22).toString();
-      let lab_start_time = time_lab.slice(0, 9).toString();
-      let lab_end_time = time_lab.slice(14, 22).toString();
-
+      let lecture_start_time = lec_start_time.slice(0, 5).toString();
+      let lecture_end_time = lec_end_time.slice(0, 5).toString();
+      let laboratory_start_time = lab_start_time.slice(0, 5).toString();
+      let laboraory_end_time = lab_end_time.slice(0, 5).toString();
 
       const schedulels = {
         lecture: {
           time: {
             start: {
-              hour: lec_start_time.slice(0, 2),
-              mins: lec_start_time.slice(3, 5),
+              hour: lecture_start_time.slice(0, 2),
+              mins: lecture_start_time.slice(3, 7),
             },
             end: {
-              hour: lec_end_time.slice(0, 2),
-              mins: lec_end_time.slice(3, 5),
+              hour: lecture_end_time.slice(0, 2),
+              mins: lecture_end_time.slice(3, 7),
             },
           },
           info: {
             faculty: facultyID,
             subject: subjectID,
-            room: lec_room_name,
+            room: lecture_room,
+            date:date,
+            day:day
           },
         },
         laboratory: {
           time: {
             start: {
-              hour: lab_start_time.slice(0, 2),
-              mins: lab_start_time.slice(3, 5),
+              hour: laboratory_start_time.slice(0, 2),
+              mins: laboratory_start_time.slice(3, 7),
             },
             end: {
               id: 3,
-              hour: lab_end_time.slice(0, 2),
-              mins: lab_end_time.slice(3, 5),
+              hour: laboraory_end_time.slice(0, 2),
+              mins: laboraory_end_time.slice(3, 7),
             },
           },
           info: {
             faculty: facultyID,
             subject: subjectID,
-            room: lab_room_name,
+            room: laboratory_room,
+            date:date,
+            day:day
           },
         },
       };
@@ -219,6 +227,9 @@ const APIController = (function () {
     },
     getSchedule() {
       return _getSchedule();
+    },
+    getRooms() {
+      return _getRooms();
     },
     setSchedule(schedule) {
       return _setSchedule(schedule);
@@ -303,8 +314,9 @@ const UIController = (function (APICtrl) {
         save_setting: document.querySelector(DomElement.setting_submit),
       };
     },
-    room_camera_container(index, faculty_id, room_num) {
+    room_camera_container(index, faculty_id, room_num,room_name) {
       const html = `<div id="${room_num}" class="position-relative bg-body-secondary">
+                  <div class="fw-bold text-center">Room ${room_name}</div>
                   <video id="scanner_camera_${index}" data-faculty="${faculty_id}"  data-attach="camera ${index}" class="mx-2 video" autoplay></video>
                   <div id="result_container_${index}" class="img_result" ></div>
                   </div>`;
@@ -326,7 +338,7 @@ const UIController = (function (APICtrl) {
         var video = document.querySelector(
           `${DomElement.scanner_video}_${index}`
         );
-        
+
         APICtrl.room_webcam(constraints, video);
       } else {
         console.error("getUserMedia is not supported in this browser");
@@ -452,13 +464,17 @@ const APPController = (function (APICtrl, UICtrl) {
       Object.entries(lecture).forEach(([key, value]) => {
         Object.entries(value).forEach(([key, value]) => {
           if (key === "start") {
+
             let room = lecture_obj["info"].room;
             let faculty_id = lecture_obj["info"].faculty;
             let subject_id = lecture_obj["info"].subject;
+            let dateSched = lecture_obj["info"].date;
+            let day = lecture_obj["info"].day;
 
             let hour = parseInt(value.hour);
             let mins = parseInt(value.mins);
             // console.log(value);
+
 
             lecture_obj["time"].start.targetTime = targetTime.setHours(
               hour,
@@ -469,6 +485,13 @@ const APPController = (function (APICtrl, UICtrl) {
 
             setInterval(() => {
               // console.log(start_time);;
+              const date = new Date();
+              const options = { weekday: 'long' };
+              const dayOfWeek = new Intl.DateTimeFormat('en-US', options).formatToParts(date)
+                .find(part => part.type === 'weekday').value;
+
+                var todayDate = new Date().toISOString().slice(0, 10);
+
               const currentTime = new Date().toLocaleTimeString("en-US", {
                 hour12: false,
               });
@@ -479,8 +502,9 @@ const APPController = (function (APICtrl, UICtrl) {
                   hour12: false,
                 }
               );
+              APICtrl.getSchedule();
 
-              if (currentTime === start_time ) {
+              if (currentTime === start_time && dateSched === todayDate && day === dayOfWeek) {
                 data({
                   faculty_id: faculty_id,
                   subject_id: subject_id,
@@ -497,6 +521,9 @@ const APPController = (function (APICtrl, UICtrl) {
             let room = lecture_obj["info"].room;
             let faculty_id = lecture_obj["info"].faculty;
             let subject_id = lecture_obj["info"].subject;
+            let dateSched = lecture_obj["info"].date;
+            let day = lecture_obj["info"].day;
+            
             let hour = parseInt(value.hour);
             let mins = parseInt(value.mins);
             // console.log(value);
@@ -509,6 +536,13 @@ const APPController = (function (APICtrl, UICtrl) {
 
             setInterval(() => {
               // console.log(start_time);;
+              const date = new Date();
+              const options = { weekday: 'long' };
+              const dayOfWeek = new Intl.DateTimeFormat('en-US', options).formatToParts(date)
+                .find(part => part.type === 'weekday').value;
+
+              var todayDate = new Date().toISOString().slice(0, 10);
+
               const currentTime = new Date().toLocaleTimeString("en-US", {
                 hour12: false,
               });
@@ -520,7 +554,7 @@ const APPController = (function (APICtrl, UICtrl) {
                 }
               );
               // function open_cam(room) {}
-              if (currentTime === end_time) {
+              if (currentTime === end_time  && dateSched === todayDate && day === dayOfWeek) {
                 // close_cam(room, faculty_id);
                   data({
                       faculty_id: faculty_id,
@@ -544,6 +578,8 @@ const APPController = (function (APICtrl, UICtrl) {
             let room = laboratory_obj["info"].room;
             let faculty_id = laboratory_obj["info"].faculty;
             let subject_id = laboratory_obj["info"].subject;
+            let dateSched = laboratory_obj["info"].date;
+            let day = laboratory_obj["info"].day;
 
             let hour = parseInt(value.hour);
             let mins = parseInt(value.mins);
@@ -558,6 +594,13 @@ const APPController = (function (APICtrl, UICtrl) {
 
             setInterval(() => {
               // console.log(start_time);;
+              const date = new Date();
+              const options = { weekday: 'long' };
+              const dayOfWeek = new Intl.DateTimeFormat('en-US', options).formatToParts(date)
+                .find(part => part.type === 'weekday').value;
+
+              var todayDate = new Date().toISOString().slice(0, 10);
+
               const currentTime = new Date().toLocaleTimeString("en-US", {
                 hour12: false,
               });
@@ -569,7 +612,7 @@ const APPController = (function (APICtrl, UICtrl) {
                 }
               );
 
-              if (currentTime === start_time ) {
+              if (currentTime === start_time && dateSched === todayDate && day === dayOfWeek ) {
                 data({
                   faculty_id: faculty_id,
                   subject_id: subject_id,
@@ -586,6 +629,9 @@ const APPController = (function (APICtrl, UICtrl) {
             let room = laboratory_obj["info"].room;
             let faculty_id = laboratory_obj["info"].faculty;
             let subject_id = laboratory_obj["info"].subject;
+            let dateSched = laboratory_obj["info"].date;
+            let day = laboratory_obj["info"].day;
+
             let hour = parseInt(value.hour);
             let mins = parseInt(value.mins);
             // console.log(value);
@@ -598,6 +644,13 @@ const APPController = (function (APICtrl, UICtrl) {
 
             setInterval(() => {
               // console.log(start_time);;
+              const date = new Date();
+              const options = { weekday: 'long' };
+              const dayOfWeek = new Intl.DateTimeFormat('en-US', options).formatToParts(date)
+                .find(part => part.type === 'weekday').value;
+
+              var todayDate = new Date().toISOString().slice(0, 10);
+
               const currentTime = new Date().toLocaleTimeString("en-US", {
                 hour12: false,
               });
@@ -609,7 +662,7 @@ const APPController = (function (APICtrl, UICtrl) {
                 }
               );
               // function open_cam(room) {}
-              if (currentTime === end_time) {
+              if (currentTime === end_time && dateSched === todayDate && day === dayOfWeek) {
                 data({
                   faculty_id: faculty_id,
                   subject_id: subject_id,
@@ -624,16 +677,18 @@ const APPController = (function (APICtrl, UICtrl) {
     })
   } 
   
- 
+
   const UInterface = async () => {
     const paired_Device = await APICtrl.fetch_pairedDevice();
-    
+  
+
     //main scanner
     paired_Device.forEach(async (device) => {
       if (device.device === "Scanner") {
         const scan = await APICtrl.scanner(device.deviceId);
         scan.addListener("scan", (content) => {
           UICtrl.toTextBox(content.toString());
+          // console.log("Main Scanner");
         });
       }
     });
@@ -760,9 +815,6 @@ const APPController = (function (APICtrl, UICtrl) {
         url: "selfieCapture.php",
         type: "POST",
         data: {image:src,faculty: facultyId, subject:subjectId},
-        success: function(data){
-          console.log(data);
-        }
       });
     }
    
@@ -836,7 +888,7 @@ const APPController = (function (APICtrl, UICtrl) {
           open.then((deviceId)=>{
             index++;
             //generate webcam video container
-            UICtrl.room_camera_container(index, facultyId, facultyId);
+            UICtrl.room_camera_container(index, facultyId, facultyId,room);
             //set webcam visual
             UICtrl.room_camera(index, deviceId);    
             const datas = {
@@ -880,6 +932,7 @@ const APPController = (function (APICtrl, UICtrl) {
   
 
   DomCtrl.sync_camera.addEventListener("click", async () => {
+    await APICtrl.getRooms();
     //get Webcams Details
     const webcams_info = await APICtrl.storeCamera_info();
     //get Room Details
@@ -890,7 +943,7 @@ const APPController = (function (APICtrl, UICtrl) {
       rooms_detail
     );
     await APICtrl.store_pairedDevice(pairedDevice); //send info to fetchRoomList.php
-    await APICtrl.getSchedule();
+ 
   });
 
 

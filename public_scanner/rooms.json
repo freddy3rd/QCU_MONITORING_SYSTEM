@@ -1,30 +1,20 @@
 [
     {
-        "ID": "1",
-        "Device": "Scanner",
-        "Room_name": "a400",
-        "Room_Floor": "1st Floor",
-        "status": "1"
+        "id": "2",
+        "room": "Room1",
+        "room_floor": "1st floor",
+        "Device": "Scanner"
     },
     {
-        "ID": "2",
-        "Device": "Monitoring",
-        "Room_name": "a401",
-        "Room_Floor": "1st Floor",
-        "status": "1"
+        "id": "3",
+        "room": "Room2",
+        "room_floor": "1st floor",
+        "Device": "Monitor"
     },
     {
-        "ID": "3",
-        "Device": "Monitoring",
-        "Room_name": "ac407",
-        "Room_Floor": "2nd Floor",
-        "status": "0"
-    },
-    {
-        "ID": "4",
-        "Device": "Monitoring",
-        "Room_name": "ac402",
-        "Room_Floor": "2nd Floor",
-        "status": "1"
+        "id": "4",
+        "room": "Room3",
+        "room_floor": "2nd floor",
+        "Device": "Monitor"
     }
 ]
