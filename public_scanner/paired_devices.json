@@ -2,6 +2,18 @@
     {
         "Room_name": "Room1",
         "device": "Scanner",
+        "deviceId": "f58f83283b2aef921e716ce31dd9a04f3cedea997e0a612737e0ba92415f4cfc",
+        "label": "2E-WCFHD (1224:2a25)"
+    },
+    {
+        "Room_name": "Room2",
+        "device": "Monitor",
+        "deviceId": "3f2bd9deec78c2ddcbd519294fc525ab3fca13e8e35b52acbb1f8ad373cc2a95",
+        "label": "Integrated Camera (13d3:784b)"
+    },
+    {
+        "Room_name": "Room3",
+        "device": "Monitor",
         "deviceId": "e6d90294a19aa04edc99c2c557fd6d50238c2c75409c9f611664fe1efeec32f7",
         "label": "HD WebCam (0bda:57f3)"
     }
