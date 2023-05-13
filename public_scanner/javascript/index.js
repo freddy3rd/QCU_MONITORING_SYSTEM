@@ -4,6 +4,34 @@
 // const tooltipList = [...tooltipTriggerList].map(
 //   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
 // );
+const emailreport = (from, email, subject,room) => {
+  var content = 
+  `Good Day QCUians! We're really sorry for the inconvenience that the system caused. 
+  This message is to notify that the room ${room} is having trouble with the camera. 
+  We assure you to take our full responsibility for this concern, the hardworking teams will provide immediate solution to this problem. 
+  We Thank you for your dedication and consideration, We appreciate you and all a lot. **THIS IS SYSTEM GENERATED PLEASE DO NOT REPLY**`;
+
+  fetch('https://automatedemailservice.onrender.com/sendEmail',{
+    method: "POST",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: from,
+      email: email,
+      subject: subject,
+      content: content
+    })
+  }).then((res) => {
+    res.json()
+    console.log(res)
+  }).then((data) => {
+    // console.log(data)
+  }).catch((err) => {
+    console.log(err)
+  })
+}
 
 const APIController = (function () {
   const _storeCamera_info = (async () => {
@@ -36,7 +64,7 @@ const APIController = (function () {
     });
     return available_camera;
   };
-  const _room_webcam = async (constraints, video) => {
+  const _room_webcam = async (constraints, video,room) => {
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then((stream) => {
@@ -53,7 +81,8 @@ const APIController = (function () {
           <div class="d-flex text-center text-black fw-bold fs-2 position-absolute top-50 start-50 translate-middle" id="status">No Camera</div>`
           $(video).attr('data-status','0')
           $(video).parent().prepend(html)
-         
+          //change emailreport 2nd parameter for email receiver
+          emailreport("QCUMS", "beni.creatives@gmail.com", "Error Report!")
         }else {
           // other error occurred
           console.error('Error accessing camera: ' + error.message);
@@ -251,8 +280,8 @@ const APIController = (function () {
     scanner(camera) {
       return _scanner(camera);
     },
-    room_webcam(constraints, video) {
-      return _room_webcam(constraints, video);
+    room_webcam(constraints, video,room) {
+      return _room_webcam(constraints, video,room);
     },
     config_setting(device, label, deviceId) {
       return _config_setting(device, label, deviceId);
@@ -336,7 +365,7 @@ const UIController = (function (APICtrl) {
         .insertAdjacentHTML("beforeend", html);
     },
 
-    room_camera(index, deviceId) {
+    room_camera(index, deviceId,room) {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         var constraints = {
           video: {
@@ -350,7 +379,7 @@ const UIController = (function (APICtrl) {
           `${DomElement.scanner_video}_${index}`
         );
 
-        APICtrl.room_webcam(constraints, video);
+        APICtrl.room_webcam(constraints, video,room);
         
 
       } else {
@@ -908,7 +937,7 @@ const APPController = (function (APICtrl, UICtrl) {
             //generate webcam video container
             UICtrl.room_camera_container(index, facultyId, facultyId,room);
             //set webcam visual
-            UICtrl.room_camera(index, deviceId);    
+            UICtrl.room_camera(index, deviceId,room);    
 
             const videoStreams = document.querySelectorAll('.video')
             const datas = {
@@ -933,7 +962,8 @@ const APPController = (function (APICtrl, UICtrl) {
                     <div class="d-flex text-center text-dark fw-bold fs-2 position-absolute top-50 start-50 translate-middle" id="status" style="z-index:3;">The Camera was unplugged</div>`
                     $(video).attr('data-status','0')
                     $(video).parent().prepend(html)
-                    console.log('Camera was unplugged.');
+                     //change emailreport 2nd parameter for email receiver
+                    emailreport("QCUMS", "beni.creatives@gmail.com", "Error Report!",room)
                   };
                 }
             })
