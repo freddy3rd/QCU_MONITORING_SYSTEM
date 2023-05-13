@@ -772,9 +772,10 @@ const APPController = (function (APICtrl, UICtrl) {
             $(".message").html(response.message);
 
   
-            // $("#faculty").val("");
+           
             setTimeout(() => {
               scan_capture($("#facultyId").val())
+               $("#faculty").val("");
             }, 5000); //5s before capture
           }
           setTimeout(() => {
