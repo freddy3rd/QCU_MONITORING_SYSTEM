@@ -1,15 +1,28 @@
 [
     {
         "facultyID": "FAC-000000002",
+        "subjectID": "21",
+        "date": "2023-05-13",
+        "section": "A",
+        "lecture_room": "Room2",
+        "lec_start_time": "13:41:00",
+        "lec_end_time": "12:59:00",
+        "laboratory_room": "Room3",
+        "lab_start_time": "22:00:00",
+        "lab_end_time": "11:51:00",
+        "day": "Friday"
+    },
+    {
+        "facultyID": "FAC-000000002",
         "subjectID": "14",
-        "date": "2023-05-12",
+        "date": "2023-05-13",
         "section": "B",
         "lecture_room": "Room2",
-        "lec_start_time": "09:59:00",
+        "lec_start_time": "11:26:00",
         "lec_end_time": "10:59:00",
-        "laboratory_room": "Room4",
-        "lab_start_time": "11:50:00",
-        "lab_end_time": "11:51:00",
+        "laboratory_room": "Room3",
+        "lab_start_time": "12:07:00",
+        "lab_end_time": "11:59:00",
         "day": "Friday"
     },
     {
@@ -17,11 +30,11 @@
         "subjectID": "21",
         "date": "2023-05-13",
         "section": "A",
-        "lecture_room": "Room3",
-        "lec_start_time": "09:30:00",
-        "lec_end_time": "09:31:00",
+        "lecture_room": "Room2",
+        "lec_start_time": "13:43:00",
+        "lec_end_time": "13:34:13",
         "laboratory_room": "Room4",
-        "lab_start_time": "11:50:00",
+        "lab_start_time": "12:01:00",
         "lab_end_time": "11:51:00",
         "day": "Saturday"
     },
@@ -41,15 +54,15 @@
     {
         "facultyID": "FAC-000000023",
         "subjectID": "14",
-        "date": "2023-05-12",
+        "date": "2023-05-13",
         "section": "A",
-        "lecture_room": "Room1",
-        "lec_start_time": "23:25:00",
-        "lec_end_time": "23:26:00",
+        "lecture_room": "Room3",
+        "lec_start_time": "13:41:00",
+        "lec_end_time": "13:37:55",
         "laboratory_room": "Room2",
         "lab_start_time": "22:35:00",
         "lab_end_time": "22:36:00",
-        "day": "Friday"
+        "day": "Saturday"
     },
     {
         "facultyID": "FAC-000000004",

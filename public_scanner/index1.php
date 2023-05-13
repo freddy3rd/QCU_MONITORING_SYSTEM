@@ -60,7 +60,7 @@
     <!-- <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script> -->
     <!-- Moment JS -->
 
-
+ 
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
     

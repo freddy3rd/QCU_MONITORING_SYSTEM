@@ -44,12 +44,23 @@ const APIController = (function () {
         video.play();
       })
       .catch(function (error) {
-        // console.log(error);
-        if(error.name = OverconstrainedError){
-          const html = `<div class="d-flex text-center text-dark fw-bold fs-2 position-absolute top-50 start-50 translate-middle">No Camera</div>`
+        //No Camera - Email
+        if(error.name = OverconstrainedError || error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError'){
+          const html = `
+          <div class="w-100 h-100 position-absolute">
+          <img src="./assets/no_cam.gif" alt="" class="w-100 h-100 position-absolute">
+          </div>
+          <div class="d-flex text-center text-black fw-bold fs-2 position-absolute top-50 start-50 translate-middle" id="status">No Camera</div>`
+          $(video).attr('data-status','0')
           $(video).parent().prepend(html)
+         
+        }else {
+          // other error occurred
+          console.error('Error accessing camera: ' + error.message);
         }
       });
+    
+
   };
   const _fetch_pairedDevice = async () => {
     try {
@@ -316,8 +327,8 @@ const UIController = (function (APICtrl) {
     },
     room_camera_container(index, faculty_id, room_num,room_name) {
       const html = `<div id="${room_num}" class="position-relative bg-body-secondary">
-                  <div class="fw-bold text-center">Room ${room_name}</div>
-                  <video id="scanner_camera_${index}" data-faculty="${faculty_id}"  data-attach="camera ${index}" class="mx-2 video" autoplay></video>
+                  <div class="fw-bold fs-3 text-center">${room_name}</div>
+                  <video id="scanner_camera_${index}" data-faculty="${faculty_id}"  data-attach="camera ${index}" class="mx-2 video" data-status="1" autoplay></video>
                   <div id="result_container_${index}" class="img_result" ></div>
                   </div>`;
       document
@@ -340,6 +351,8 @@ const UIController = (function (APICtrl) {
         );
 
         APICtrl.room_webcam(constraints, video);
+        
+
       } else {
         console.error("getUserMedia is not supported in this browser");
       }
@@ -379,7 +392,6 @@ const UIController = (function (APICtrl) {
       var dataUrl_1 = canvas.toDataURL();
 
       return dataUrl_1
-
     
     },
     room_generate_image(video_id) {
@@ -402,8 +414,9 @@ const UIController = (function (APICtrl) {
           playingVideos.push(video);
         }
       });
+
       if (playingVideos.length > 0) {
-    
+
           playingVideos.forEach(video => {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
@@ -413,6 +426,7 @@ const UIController = (function (APICtrl) {
           ctx.font = "20px Arial";
           ctx.fillText(data_time, 20, 40);
           var dataUrl_1 = canvas.toDataURL();
+
           const datas = {
             src:dataUrl_1
           }
@@ -420,6 +434,7 @@ const UIController = (function (APICtrl) {
         });
         
       }
+     
       return images;
     },
     
@@ -680,7 +695,8 @@ const APPController = (function (APICtrl, UICtrl) {
 
   const UInterface = async () => {
     const paired_Device = await APICtrl.fetch_pairedDevice();
-  
+    
+
 
     //main scanner
     paired_Device.forEach(async (device) => {
@@ -799,6 +815,7 @@ const APPController = (function (APICtrl, UICtrl) {
     // var timeout = "10100";
     function uploadVideoImages(video_id) {
       const images = UICtrl.room_generate_image(video_id);
+
       imageData.forEach((data,index) =>{
         data.src = images[index]
       })
@@ -870,7 +887,7 @@ const APPController = (function (APICtrl, UICtrl) {
     let timeInterval
     function capture_timer(){
       timeInterval = setInterval(()=>{
-        uploadVideoImages('.video');
+        uploadVideoImages('[data-status="1"]');
       },interval)
      }
   
@@ -892,6 +909,8 @@ const APPController = (function (APICtrl, UICtrl) {
             UICtrl.room_camera_container(index, facultyId, facultyId,room);
             //set webcam visual
             UICtrl.room_camera(index, deviceId);    
+
+            const videoStreams = document.querySelectorAll('.video')
             const datas = {
               faculty:facultyId,
               subject:subjectId
@@ -901,6 +920,24 @@ const APPController = (function (APICtrl, UICtrl) {
               functionExecuted = true; 
               capture_timer()
              }
+             setInterval(()=>{
+              videoStreams.forEach(video=>{
+                var mediaStream = video.srcObject
+                if(mediaStream){
+                  mediaStream.oninactive = function() {
+                    //Camera Unplugged - Email
+                    const html = `
+                    <div class="w-100 h-100 position-absolute " style="z-index:2;">
+                    <img src="./assets/no_cam.gif" alt="" class="w-100 h-100 position-absolute">
+                    </div>
+                    <div class="d-flex text-center text-dark fw-bold fs-2 position-absolute top-50 start-50 translate-middle" id="status" style="z-index:3;">The Camera was unplugged</div>`
+                    $(video).attr('data-status','0')
+                    $(video).parent().prepend(html)
+                    console.log('Camera was unplugged.');
+                  };
+                }
+            })
+             },1000)
          })  
         }
       })
@@ -927,6 +964,7 @@ const APPController = (function (APICtrl, UICtrl) {
         stopInterval()
         close_cam(result.room,result.faculty_id)
       }
+
 
     });   
   };
