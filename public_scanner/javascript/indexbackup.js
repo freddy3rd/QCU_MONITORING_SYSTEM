@@ -474,44 +474,44 @@ const APPController = (function (APICtrl, UICtrl) {
     }
     // await APICtrl.sendAttendance();
 
-    $("#attendance").submit(function (e) {
-      e.preventDefault();
-      var attendance = $(this).serialize();
-      const img_id = "scanner_image";
-      $.ajax({
-        type: "POST",
-        url: "attendance.php",
-        data: attendance,
-        dataType: "json",
-        success: function (response) {
-          $("#facultyId").val(response.facultyId);
-          if (response.error) {
-            $(".alert").hide();
-            $(".alert-danger").show();
-            $(".message").html(response.message);
-          } else {
-            $(".alert").hide();
-            $(".alert-success").show();
-            $(".message").html(response.message);
+    // $("#attendance").submit(function (e) {
+    //   e.preventDefault();
+    //   var attendance = $(this).serialize();
+    //   const img_id = "scanner_image";
+    //   $.ajax({
+    //     type: "POST",
+    //     url: "attendance.php",
+    //     data: attendance,
+    //     dataType: "json",
+    //     success: function (response) {
+    //       $("#facultyId").val(response.facultyId);
+    //       if (response.error) {
+    //         $(".alert").hide();
+    //         $(".alert-danger").show();
+    //         $(".message").html(response.message);
+    //       } else {
+    //         $(".alert").hide();
+    //         $(".alert-success").show();
+    //         $(".message").html(response.message);
 
-            // $("#faculty").val("");
-            setTimeout(() => {
-              UICtrl.generate_image(
-                `#result_container_${index}`,
-                "webcam",
-                `#scanner_camera_${index}`
-              );
-            }, 5000); //5s before capture
-          }
-          setTimeout(() => {
-            $(".alert").hide();
-          }, 2000);
-        },
-        catch: (err) => {
-          console.log(err.message);
-        },
-      });
-    });
+    //         // $("#faculty").val("");
+    //         setTimeout(() => {
+    //           UICtrl.generate_image(
+    //             `#result_container_${index}`,
+    //             "webcam",
+    //             `#scanner_camera_${index}`
+    //           );
+    //         }, 5000); //5s before capture
+    //       }
+    //       setTimeout(() => {
+    //         $(".alert").hide();
+    //       }, 2000);
+    //     },
+    //     catch: (err) => {
+    //       console.log(err.message);
+    //     },
+    //   });
+    // });
 
     const sched_arr = await time_conversion();
     const targetTime = new Date();

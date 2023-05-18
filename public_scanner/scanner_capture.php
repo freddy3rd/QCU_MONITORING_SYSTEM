@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $filepath = './img/'. $filename;
           file_put_contents($filepath, $img);
 
-          $sql = "INSERT INTO attendance_attachments(subjectID, facultyID, attachment) VALUES ('$subjectID', '$facultyID', '$filename')";
+          $sql = "INSERT INTO attendance_attachments(facultyID, attachment,subjectID) VALUES ('$facultyID', '$filename','$subjectID')";
           $conn->query($sql);
 
           header("Location: index1.php");

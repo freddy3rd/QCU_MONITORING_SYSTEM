@@ -1,20 +1,26 @@
 [
     {
-        "id": "2",
-        "room": "Room1",
+        "id": "1",
+        "room": "a400",
         "room_floor": "1st floor",
         "Device": "Scanner"
     },
     {
+        "id": "2",
+        "room": "a401",
+        "room_floor": "2nd floor",
+        "Device": "Monitoring"
+    },
+    {
         "id": "3",
-        "room": "Room2",
+        "room": "ac407",
         "room_floor": "1st floor",
-        "Device": "Monitor"
+        "Device": "Monitoring"
     },
     {
         "id": "4",
-        "room": "Room3",
+        "room": "ac403",
         "room_floor": "2nd floor",
-        "Device": "Monitor"
+        "Device": "Monitoring"
     }
 ]

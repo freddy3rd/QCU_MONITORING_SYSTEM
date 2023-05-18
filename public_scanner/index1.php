@@ -37,6 +37,10 @@
     pointer-events:none;
 
   }
+  .tbodyDiv{
+max-height: clamp(5em,10vh,250px);
+overflow: auto;
+}
 
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,7 +70,7 @@
     
     <!-- <script type="module" src="captureImage_v2.js" defer></script> -->
 
-    <script module src="./javascript/index.js" defer></script>
+    <script type="module"  src="./javascript/index.js" defer></script>
 
 
     <!-- <script module src="./javascript/generate_camera.js" defer></script> -->
@@ -74,67 +78,70 @@
 <body class=" bg-body-secondary">
  
 
-  <div class="container-fluid row">
+  <div class="container-fluid row ">
     <div class="col-md-6 d-flex align-items-center justify-content-center position-relative p-4" style="background:#065280;min-height:100vh">
-      <div class=" text-center fs-3 text-light p-4 position-fixed top-0 left-0" >
+      <div class=" text-center fs-3 text-light p-4 position-fix top-0" >
         <h3 class="fw-bold p-2">Web-based Faculty Weekly Accomplishment Report for Quezon City University</h3>
         <div class="container">
           <img src="./public/qcu-logo-2019-1@2x.png" class="m-4" width="200" height="200" class="logo" alt="">
           <hr class="px-4 border-4 rounded-2">
         </div>
         <h3>Good Life Starts Here!</h3>
+        <div class="table-responsive-md">
+          
         <table class="table table-light align-middle text-center">
-  <thead>
-    <tr>  
-      <th scope="col">Date</th>
-      <th scope="col">Faculty Name</th>
-      <th scope="col">Section</th>
-      <th scope="col">Lec Room</th>
-      <th scope="col">Time Start</th>
-      <th scope="col">Time End</th>
-      <th scope="col">Lab Room</th>
-      <th scope="col">Time Start</th>
-      <th scope="col">Time End</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php
-    $date_now = date('Y-m-d');
-    $timestamp = strtotime($date_now); // This will create a Unix timestamp for May 13th, 2023
-    $day = date('l', $timestamp);
+        <thead>
+          <tr>  
+            <th scope="col">Date</th>
+            <th scope="col">Faculty Name</th>
+            <th scope="col">Section</th>
+            <th scope="col">Lec Room</th>
+            <th scope="col">Time Start</th>
+            <th scope="col">Time End</th>
+            <th scope="col">Lab Room</th>
+            <th scope="col">Time Start</th>
+            <th scope="col">Time End</th>
+          </tr>
+        </thead>
+      
+        <tbody>
+          <?php
+          $date_now = date('Y-m-d');
+          $timestamp = strtotime($date_now); // This will create a Unix timestamp for May 13th, 2023
+          $day = date('l', $timestamp);
 
-    $sql = "SELECT * FROM (SELECT schedule_setup.facultyID,schedule_setup.subjectID, schedule_setup.date,faculty_subject_schedule.section,schedule_setup.lec_room as lecture_room,faculty_subject_schedule.time_start as lec_start_time,faculty_subject_schedule.time_end as lec_end_time,faculty_subject_schedule.day FROM schedule_setup inner join faculty_subject_schedule ON schedule_setup.facultyID = faculty_subject_schedule.facultyID AND schedule_setup.subjectID = faculty_subject_schedule.subjectID WHERE faculty_subject_schedule.type = 'Lecture') AS lecture_sched INNER JOIN
-    (SELECT schedule_setup.facultyID,schedule_setup.subjectID,faculty_subject_schedule.section,schedule_setup.lab_room as laboratory_room,faculty_subject_schedule.time_start as lab_start_time,faculty_subject_schedule.time_end as lab_end_time, faculty_subject_schedule.day FROM schedule_setup inner join faculty_subject_schedule ON schedule_setup.facultyID = faculty_subject_schedule.facultyID AND schedule_setup.subjectID = faculty_subject_schedule.subjectID WHERE faculty_subject_schedule.type = 'Laboratory') as laboratory_sched ON lecture_sched.facultyID = laboratory_sched.facultyID INNER JOIN (SELECT faculty.facultyID, faculty.faculty_firstname,faculty.faculty_lastname,faculty.faculty_middlename FROM faculty)as faculty_info  WHERE faculty_info.facultyID = lecture_sched.facultyID AND lecture_sched.subjectID = laboratory_sched.subjectID AND  lecture_sched.date = '$date_now' AND lecture_sched.day = '$day'";
+          $sql = "SELECT * FROM (SELECT schedule_setup.facultyID,schedule_setup.subjectID, schedule_setup.date,faculty_subject_schedule.section,schedule_setup.lec_room as lecture_room,faculty_subject_schedule.time_start as lec_start_time,faculty_subject_schedule.time_end as lec_end_time,faculty_subject_schedule.day FROM schedule_setup inner join faculty_subject_schedule ON schedule_setup.facultyID = faculty_subject_schedule.facultyID WHERE faculty_subject_schedule.type = 'Lecture' AND schedule_setup.date = '$date_now' AND faculty_subject_schedule.day = '$day') AS lecture_sched INNER JOIN
+          (SELECT schedule_setup.facultyID,schedule_setup.subjectID,faculty_subject_schedule.section,schedule_setup.lab_room as laboratory_room,faculty_subject_schedule.time_start as lab_start_time,faculty_subject_schedule.time_end as lab_end_time, faculty_subject_schedule.day FROM schedule_setup inner join faculty_subject_schedule ON schedule_setup.facultyID = faculty_subject_schedule.facultyID WHERE faculty_subject_schedule.type = 'Laboratory' AND schedule_setup.date = '$date_now' AND faculty_subject_schedule.day = '$day') as laboratory_sched ON lecture_sched.facultyID = laboratory_sched.facultyID INNER JOIN (SELECT faculty.facultyID, faculty.faculty_firstname,faculty.faculty_lastname,faculty.faculty_middlename FROM faculty)as faculty_info  WHERE faculty_info.facultyID = lecture_sched.facultyID AND lecture_sched.subjectID = laboratory_sched.subjectID  ";
 
-    $run_query = mysqli_query($conn,$sql) or die(mysqli_error($conn));
-    if(mysqli_num_rows($run_query) > 0){
-      while($row = mysqli_fetch_array($run_query)){
-        echo'
-        <tr>
-        <td>'.$row['date'].'</td>
-        <td>'.$row['faculty_lastname'].', '.$row['faculty_firstname'].'</td>
-        <td>'.$row['section'].'</td>
-        <td>'.$row['lecture_room'].'</td>
-        <td>'.$row['lec_start_time'].'</td>
-        <td>'.$row['lec_end_time'].'</td>
-        <td>'.$row['laboratory_room'].'</td>
-        <td>'.$row['lab_start_time'].'</td>
-        <td>'.$row['lab_end_time'].'</td>
+          $run_query = mysqli_query($conn,$sql) or die(mysqli_error($conn));
+          if(mysqli_num_rows($run_query) > 0){
+            while($row = mysqli_fetch_array($run_query)){
+              echo'
+              <tr>
+              <td>'.$row['date'].'</td>
+              <td>'.$row['faculty_lastname'].', '.$row['faculty_firstname'].'</td>
+              <td>'.$row['section'].'</td>
+              <td>'.$row['lecture_room'].'</td>
+              <td>'.$row['lec_start_time'].'</td>
+              <td>'.$row['lec_end_time'].'</td>
+              <td>'.$row['laboratory_room'].'</td>
+              <td>'.$row['lab_start_time'].'</td>
+              <td>'.$row['lab_end_time'].'</td>
 
-        </tr>
-      ';
-        
-      }
-    }
+              </tr>
+            ';
+              
+            }
+          }
 
-   
+          ?>
+            </tbody>
 
-    
-    ?>
-  </tbody>
-</table>
+          </table>
+        </div>
       </div>
     </div>
+
     
     <div class="col-md-6 p-4 position-ralative">
       <div class="d-flex justify-content-end align-items-center fs-5 py-3 px-2">
@@ -163,18 +170,6 @@
                 </form>
             </div>
           </div>
-
-          <!-- <div class="alert alert-light alert-dismissible justify-content-center text-center  px-3 position-absolute start-50 translate-middle"  id="room_selection" style="display:none;top:60%;min-width:25rem">
-              <div class="d-flex justify-content-center align-item-center flex-wrap gap-2 w-100">
-                <p class="mb-2 text-center text-danger fw-semibold">Your designated room is currently unavailable. Please choose a new Rooms.</p>
-                <select class="form-control d-flex align-items-center "  name="Room" id="Room">
-                    <option value="" selected>Please select Room</option>
-                </select>
-                <button type="button" id="open_camera_perRoom" class="btn btn-primary mx-2 w-100 px-2 "> Select Room </button>
-                <button type="button" id="cancel" class="btn btn-danger mx-2 w-100 px-2 "> I'll take mine </button>
-              </div>
-            </div> -->
-
             <div class="alert alert-success alert-dismissible text-center position-absolute px-3 align-item-center justify-content-center w-50 start-50 translate-middle"  id="snapShot_container" style="display:none;top:60%;">
                 <i class="icon fa fa-circle-check fs-2"></i>
                 <div class="result d-grid mb-2"> <span class="message fw-bold"></span></div>
@@ -189,7 +184,11 @@
 
         
         <h3 class="text-center fw-bold fs-3 text-danger py-4"><i class="fa-solid fa-camera"></i> Live Camera</h3>
-        <div class="p-4 d-flex flex-wrap justify-content-center align-item-center gap-2 camera_list"></div>
+        <div class="p-4 d-flex flex-wrap justify-content-center align-item-center gap-2 camera_list">
+
+        <!-- <iframe src="./scanner1.html" scrolling="no" width="440" height="380" frameborder="0" id="scanner_1"></iframe> -->
+        <!-- <iframe src="./scanner2.html" scrolling="no" width="440" height="380" frameborder="0" id="scanner_1"></iframe> -->
+        </div>
     </div>
 
     <!--SETTINGS MODAL-->
